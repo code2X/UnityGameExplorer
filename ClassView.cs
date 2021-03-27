@@ -68,9 +68,6 @@ namespace ExplorerSpace
         Rect midArea = new Rect(190, 50, 450, 700);
         Vector2 midPos = new Vector2();
 
-        ScrollView midScrollview = new ScrollView(190, 50, 240);
-        ScrollView rightScrollview = new ScrollView(430, 50, 200);
-
         public override void DrawMidView(string curclassName, CsharpClass curClass)
         {
             GUI.TextField(new Rect(210, 30, 190, 20), curclassName + "属性");
@@ -106,9 +103,6 @@ namespace ExplorerSpace
         Rect midArea = new Rect(IView.midx, 50, 450, 700);
         Vector2 midPos = new Vector2();
 
-        ScrollView midScrollview = new ScrollView(190, 50, 240);
-        ScrollView rightScrollview = new ScrollView(430, 50, 200);
-
         public override void DrawMidView(string curclassName, CsharpClass curClass)
         {
             GUI.TextField(new Rect(210, 30, 190, 20), curclassName + "变量");
@@ -141,11 +135,11 @@ namespace ExplorerSpace
         }
     }
 
-    interface IInstanceView
+    public abstract class IInstanceView
     {
-        ClassInfo GetInfo();
-        void DrawMidView(CsharpClass instanceClass, object instance);
-        void DrawRightView(CsharpClass instanceClass, object instance);
+        public abstract ClassInfo GetInfo();
+        public abstract void DrawMidView(CsharpClass instanceClass, object instance);
+        public virtual void DrawRightView(CsharpClass instanceClass, object instance) { }
     }
 
     class InstanceFieldView : IInstanceView
@@ -153,16 +147,15 @@ namespace ExplorerSpace
         Rect midArea = new Rect(190, 50, 450, 700);
         Vector2 midPos = new Vector2();
 
-        public void DrawMidView(CsharpClass instanceClass, object instance)
+        public override void DrawMidView(CsharpClass instanceClass, object instance)
         {
             GUI.TextField(new Rect(210, 30, 190, 20), instance.ToString());
 
             GUILayout.BeginArea(midArea);
             midPos = GUILayout.BeginScrollView(midPos);
             GUILayout.BeginHorizontal();
-            GUILayout.TextField("Type");
-            GUILayout.TextField("Name");
-            GUILayout.TextField("Value");
+            GUILayout.Label("Type Name");
+            GUILayout.Label("Value");
             GUILayout.EndHorizontal();
 
             foreach (var i in instanceClass.FieldList)
@@ -172,8 +165,8 @@ namespace ExplorerSpace
                     //Debug.Log("Instance");
                     object obj = i.Value.GetValue(instance);
                     GUILayout.BeginHorizontal();
-                    GUILayout.Button(i.Value.FieldType.Name + "  " + i.Key);
-                    GUILayout.TextField(obj.ToString());
+                    GUILayout.Label(i.Value.FieldType.Name + "  " + i.Key);
+                    GUILayout.Button(obj.ToString());
                     GUILayout.EndHorizontal();
                 }
                 else
@@ -187,15 +180,7 @@ namespace ExplorerSpace
             GUILayout.EndArea();
         }
 
-        public void DrawRightView(CsharpClass className, object csharpClass)
-        {
-
-        }
-
-        public ClassInfo GetInfo()
-        {
-            return ClassInfo.Field;
-        }
+        public override ClassInfo GetInfo() => ClassInfo.Field;
     }
 
     class InstanceMethodView : IInstanceView
@@ -203,7 +188,7 @@ namespace ExplorerSpace
         Rect midArea = new Rect(190, 50, 450, 700);
         Vector2 midPos = new Vector2();
 
-        public void DrawMidView(CsharpClass instanceClass, object instance)
+        public override void DrawMidView(CsharpClass instanceClass, object instance)
         {
             GUI.TextField(new Rect(210, 30, 190, 20), instance.ToString());
 
@@ -225,15 +210,7 @@ namespace ExplorerSpace
             GUILayout.EndArea();
         }
 
-        public void DrawRightView(CsharpClass className, object csharpClass)
-        {
-
-        }
-
-        public ClassInfo GetInfo()
-        {
-            return ClassInfo.Method;
-        }
+        public override ClassInfo GetInfo() => ClassInfo.Method;
     }
 
     class InstancePropView : IInstanceView
@@ -241,7 +218,7 @@ namespace ExplorerSpace
         Rect midArea = new Rect(190, 50, 450, 700);
         Vector2 midPos = new Vector2();
 
-        public void DrawMidView(CsharpClass instanceClass, object instance)
+        public override void DrawMidView(CsharpClass instanceClass, object instance)
         {
             GUI.TextField(new Rect(210, 30, 190, 20), instance.ToString());
 
@@ -263,24 +240,16 @@ namespace ExplorerSpace
             GUILayout.EndArea();
         }
 
-        public void DrawRightView(CsharpClass className, object csharpClass)
-        {
-
-        }
-
-        public ClassInfo GetInfo()
-        {
-            return ClassInfo.Property;
-        }
+        public override ClassInfo GetInfo() => ClassInfo.Property;
     }
 
     class StaticMethodView : IView
     {
         Rect midArea = new Rect(190, 50, 240, 700);
         Vector2 midPos = new Vector2();
+        Rect rightArea = new Rect(430, 50, 240, 700);
+        Vector2 rightPos = new Vector2();
 
-        ScrollView midScrollview = new ScrollView(190, 50, 240);
-        ScrollView rightScrollview = new ScrollView(430, 50, 200);
         static CsharpClass curClass;
         static string curFuncName = string.Empty;
 
@@ -313,9 +282,11 @@ namespace ExplorerSpace
                 if (curFuncName != String.Empty)
                     GUI.TextField(new Rect(430, 30, 190, 20), curFuncName);
 
-                rightScrollview.Begin();
-                rightScrollview.Lable("返回类型: " + func.ReturnType.Name);
-                rightScrollview.End();
+                GUILayout.BeginArea(rightArea);
+                rightPos = GUILayout.BeginScrollView(rightPos);
+                GUILayout.Label("返回类型: " + func.ReturnType.Name);
+                GUILayout.EndScrollView();
+                GUILayout.EndArea();
             }
         }
 
@@ -326,7 +297,8 @@ namespace ExplorerSpace
     {
         Rect midArea = new Rect(190, 50, 450, 700);
         Vector2 midPos = new Vector2();
-        ScrollView rightScrollview = new ScrollView(430, 50, 200);
+        Rect rightArea = new Rect(430, 50, 240, 700);
+        Vector2 rightPos = new Vector2();
         static CsharpClass curClass;
         static string curFuncName = string.Empty;
 
@@ -352,22 +324,22 @@ namespace ExplorerSpace
                 if (CsharpKeyword.GeneralTypes.Contains(func.ReturnType) && i.Key.StartsWith("get_"))
                 {
                     GUILayout.BeginHorizontal();
-                    if (GUILayout.Button(i.Value.ReturnType.Name + "  " + i.Key))
-                    {
-                        curFuncName = i.Key;
-                    }
-                    GUILayout.Button(func.Invoke(null, null).ToString());
+                    GUILayout.Label(i.Value.ReturnType.Name + "  " + i.Key);
+                    GUILayout.TextField(func.Invoke(null, null).ToString());
                     GUILayout.EndHorizontal();
                 }
                 else
                 {
-                    if (GUILayout.Button(i.Value.ReturnType.Name + "  " + i.Key))
+                    GUILayout.BeginHorizontal();
+                    GUILayout.TextField(i.Value.ReturnType.Name);
+                    if (GUILayout.Button(i.Key))
                     {
                         curFuncName = i.Key;
                         RuntimeExplorer.showInstanceWindow = true;
                         RuntimeExplorer.curInstance = func.Invoke(null, null);
                         RuntimeExplorer.curInstanceName = i.Key;
                     }
+                    GUILayout.EndHorizontal();
                 }
             }
 
@@ -385,10 +357,12 @@ namespace ExplorerSpace
                     GUI.TextField(new Rect(430, 30, 190, 20), curFuncName);
                 if (func.GetParameters().Length == 0)
                 {
-                    rightScrollview.Begin();
-                    rightScrollview.Lable("返回类型: " + func.ReturnType.Name);
-                    rightScrollview.Lable("值: " + func.Invoke(null, null));
-                    rightScrollview.End();
+                    GUILayout.BeginArea(rightArea);
+                    rightPos = GUILayout.BeginScrollView(rightPos);
+                    GUILayout.Label("返回类型: " + func.ReturnType.Name);
+                    GUILayout.Label("值: " + func.Invoke(null, null));
+                    GUILayout.EndScrollView();
+                    GUILayout.EndArea();
                 }
             }
         }
@@ -424,11 +398,15 @@ namespace ExplorerSpace
                     {
                         GUILayout.TextField(i.Key);
                     }
-                    else if(GUILayout.Button(i.Value.FieldType.Name + "  " + i.Key))
+                    else 
                     {
-                        RuntimeExplorer.showInstanceWindow = true;
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label(i.Value.FieldType.Name);
+                        if (GUILayout.Button( i.Key))
+                            RuntimeExplorer.showInstanceWindow = true;
                         RuntimeExplorer.curInstance = i.Value.GetValue(null);
                         RuntimeExplorer.curInstanceName = i.Key;
+                        GUILayout.EndHorizontal();
                     }
                 }
 
@@ -436,11 +414,6 @@ namespace ExplorerSpace
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
-        }
-
-        public override void DrawRightView(string className, CsharpClass csharpClass)
-        {
-
         }
 
         public override ClassInfo GetInfo() =>  ClassInfo.StaticField;

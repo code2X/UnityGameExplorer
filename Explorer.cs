@@ -25,40 +25,46 @@ namespace ExplorerSpace
         StaticMethod
     }
 
-    class ClassInstance
-    {
-        public static Dictionary<string, object> InstanceList = new Dictionary<string, object>();
-    }
+    //class ClassInstance
+    //{
+    //    public static Dictionary<string, object> InstanceList = new Dictionary<string, object>();
+    //}
 
-    [BepInPlugin("RuntimeUnityExplorer", "Runtime Unity Explorer", "1.0")]
+    
+
+    [BepInPlugin("UnityGameExplorer", "Unity Game Explorer", "1.0")]
     public class RuntimeExplorer : BaseUnityPlugin
     {
-        public static bool showExplorerWindow = false;
+        //public static bool showExplorerWindow = false;
         public static bool showInstanceWindow = false;
         public static object curInstance = null;
         public static string curInstanceName;
 
-        SortedList<string, CsharpClass> classListDetails;
+        //ClassInfo curInfo = ClassInfo.Null;
+        //CsharpClass curClass = null;
+        //string curClassName = string.Empty;
 
-        ClassInfo curInfo = ClassInfo.Null;
-        CsharpClass curClass = null;
-        string curClassName = string.Empty;
         ArrayList views;
         ArrayList instanceViews;
 
+        ExplorerView explorerView;
+
         AssemblyClass g_Assembly;
-        SortedList<string, bool> classCategoryState;
+        //SortedList<string, bool> classCategoryState;
         SortedDictionary<string, Type> g_ClassName2Type;
-        SortedDictionary<string, SortedDictionary<string, bool>> classCluster;
+
+        public static SortedList<string, CsharpClass> classListDetails;
+        public static SortedDictionary<string, SortedDictionary<string, bool>> classCluster;
 
         public static ConfigEntry<string> g_DllPathConfig;
 
         void Start()
         {
-            classCategoryState = new SortedList<string, bool>();
+            //classCategoryState = new SortedList<string, bool>();
             classListDetails = new SortedList<string, CsharpClass>();
 
             //Add Explorer View
+
             views = new ArrayList();
             views.Add(new MethodView());
             views.Add(new PropView());
@@ -66,6 +72,8 @@ namespace ExplorerSpace
             views.Add(new StaticFieldView());
             views.Add(new StaticPropView());
             views.Add(new StaticMethodView());
+
+            explorerView = new ExplorerView(views);
 
             //Add Instance View
             instanceViews = new ArrayList();
@@ -79,10 +87,12 @@ namespace ExplorerSpace
 
         void Update()
         {
-            if(Input.GetKeyDown(KeyCode.End))
-            {
-                showExplorerWindow = !showExplorerWindow;
-            }
+            explorerView.Update();
+
+            //if (Input.GetKeyDown(KeyCode.End))
+            //{
+            //    showExplorerWindow = !showExplorerWindow;
+            //}
         }
 
         void Init()
@@ -96,7 +106,8 @@ namespace ExplorerSpace
                 classCluster = DspClassCluster.GetCluster(g_ClassName2Type);
                 foreach (var i in classCluster)
                 {
-                    classCategoryState.Add(i.Key, false);
+                    explorerView.categoryState.Add(i.Key, false);
+                    //classCategoryState.Add(i.Key, false);
                 }
 
                 foreach (var cls in g_ClassName2Type)
@@ -114,27 +125,28 @@ namespace ExplorerSpace
         public Rect instanceRect = new Rect(100, 20, 700, 800);
         void OnGUI()
         {
-            if(showExplorerWindow)
-            {
-                explorerRect = GUI.Window(9988, explorerRect, DrawExplorerWindow, "Runtime Unity Explorer");
-            }         
+            explorerView.OnGUI();
+            //if (showExplorerWindow)
+            //{
+            //    explorerRect = GUI.Window(9988, explorerRect, DrawExplorerWindow, "Unity Game Explorer");
+            //}         
             if (showInstanceWindow)
             {
                 instanceRect = GUI.Window(9999, instanceRect, DrawInstanceWindow, "Instance Explorer");
             }
         }
 
-        string curText = "";
-        void DrawExplorerWindow(int windowID)
-        {
-            GUI.DragWindow(new Rect(0, 0, 10000, 20));
-            curText = GUI.TextField(new Rect(10, 30, 170, 20), curText);
-
-            DrawLeftView();
-            DrawMidView();
-            DrawRightView();
-        }
-
+        //string curText = "";
+        //void DrawExplorerWindow(int windowID)
+        //{
+        //    GUI.DragWindow(new Rect(0, 0, 10000, 20));
+        //    curText = GUI.TextField(new Rect(10, 30, 170, 20), curText);
+        //
+        //    DrawLeftView();
+        //    DrawMidView();
+        //    DrawRightView();
+        //}
+        //
         void DrawInstanceWindow(int windowID)
         {
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
@@ -146,7 +158,6 @@ namespace ExplorerSpace
             {
                 GUI.Button(new Rect(10, 30, 170, 20), "nullptr");
             }
-
 
             if (GUI.Button(new Rect(600, 30, 80, 20), "关闭"))
             {
@@ -201,110 +212,110 @@ namespace ExplorerSpace
                 }
             }
         }
-        struct NameInfo
-        {
-            string name;
-            ClassInfo info;
-        }
-        static Dictionary<string,ClassInfo> classNameInfo = new Dictionary<string, ClassInfo> {
-            { "属性", ClassInfo.Property },
-            { "变量", ClassInfo.Field },
-            { "方法", ClassInfo.Method },
-            { "静态属性", ClassInfo.StaticProp },
-            { "静态变量", ClassInfo.StaticField },
-            { "静态方法", ClassInfo.StaticMethod },
-        };
-        void DrawClassStruct(string className)
-        {
-            //Enum class
-            if(classListDetails[className].type.IsEnum)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(40);
-                if (GUILayout.Button("枚举类型"))
-                {
-                    curInfo = ClassInfo.StaticField;
-                    curClassName = className;
-                    curClass = classListDetails[className];
-                }
-                GUILayout.EndHorizontal();
-            }
-            else
-            {
-                foreach (var info in classNameInfo)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Space(40);
-                    if (GUILayout.Button(info.Key))
-                    {
-                        curInfo = info.Value;
-                        curClassName = className;
-                        curClass = classListDetails[className];
-                    }
-                    GUILayout.EndHorizontal();
-                }
-            }
+        //struct NameInfo
+        //{
+        //    string name;
+        //    ClassInfo info;
+        //}
+        //static Dictionary<string, ClassInfo> classNameInfo = new Dictionary<string, ClassInfo> {
+        //    { "属性", ClassInfo.Property },
+        //    { "变量", ClassInfo.Field },
+        //    { "方法", ClassInfo.Method },
+        //    { "静态属性", ClassInfo.StaticProp },
+        //    { "静态变量", ClassInfo.StaticField },
+        //    { "静态方法", ClassInfo.StaticMethod },
+        //};
+        //void DrawClassStruct(string className)
+        //{
+        //    //Enum class
+        //    if (classListDetails[className].type.IsEnum)
+        //    {
+        //        GUILayout.BeginHorizontal();
+        //        GUILayout.Space(40);
+        //        if (GUILayout.Button("枚举类型"))
+        //        {
+        //            curInfo = ClassInfo.StaticField;
+        //            curClassName = className;
+        //            curClass = classListDetails[className];
+        //        }
+        //        GUILayout.EndHorizontal();
+        //    }
+        //    else
+        //    {
+        //        foreach (var info in classNameInfo)
+        //        {
+        //            GUILayout.BeginHorizontal();
+        //            GUILayout.Space(40);
+        //            if (GUILayout.Button(info.Key))
+        //            {
+        //                curInfo = info.Value;
+        //                curClassName = className;
+        //                curClass = classListDetails[className];
+        //            }
+        //            GUILayout.EndHorizontal();
+        //        }
+        //    }
+        //
+        //}
 
-        }
+        //Rect explorerLeftArea = new Rect(10, 50, 180, 700);
+        //Vector2 explorerLeftPos = new Vector2();
+        //void DrawLeftView()
+        //{
+        //    GUILayout.BeginArea(explorerLeftArea);
+        //    explorerLeftPos = GUILayout.BeginScrollView(explorerLeftPos);
+        //
+        //    //Draw category
+        //    foreach (var category2state in classCategoryState)
+        //    {
+        //        bool result = GUILayout.Toggle(category2state.Value, category2state.Key);
+        //        classCategoryState[category2state.Key] = result;
+        //        if(result)
+        //        {
+        //            //Draw class
+        //            foreach (var class2state in classCluster[category2state.Key])
+        //            {
+        //                //Filter class name
+        //                if ( class2state.Key.IndexOf(curText) != -1)
+        //                {
+        //                    GUILayout.BeginHorizontal();
+        //                    GUILayout.Space(20);
+        //                    bool res = GUILayout.Toggle(class2state.Value, class2state.Key);
+        //                    GUILayout.EndHorizontal();
+        //
+        //                    classCluster[category2state.Key][class2state.Key] = res;
+        //                    if (res)
+        //                        DrawClassStruct(class2state.Key);
+        //                }
+        //            }
+        //        }
+        //    }
+        //
+        //    GUILayout.EndScrollView();
+        //    GUILayout.EndArea();
+        //}
 
-        Rect explorerLeftArea = new Rect(10, 50, 180, 700);
-        Vector2 explorerLeftPos = new Vector2();
-        void DrawLeftView()
-        {
-            GUILayout.BeginArea(explorerLeftArea);
-            explorerLeftPos = GUILayout.BeginScrollView(explorerLeftPos);
-
-            //Draw category
-            foreach (var category2state in classCategoryState)
-            {
-                bool result = GUILayout.Toggle(category2state.Value, category2state.Key);
-                classCategoryState[category2state.Key] = result;
-                if(result)
-                {
-                    //Draw class
-                    foreach (var class2state in classCluster[category2state.Key])
-                    {
-                        //Filter class name
-                        if ( class2state.Key.IndexOf(curText) != -1)
-                        {
-                            GUILayout.BeginHorizontal();
-                            GUILayout.Space(20);
-                            bool res = GUILayout.Toggle(class2state.Value, class2state.Key);
-                            GUILayout.EndHorizontal();
-
-                            classCluster[category2state.Key][class2state.Key] = res;
-                            if (res)
-                                DrawClassStruct(class2state.Key);
-                        }
-                    }
-                }
-            }
-
-            GUILayout.EndScrollView();
-            GUILayout.EndArea();
-        }
-
-        void DrawMidView()
-        {
-            foreach(IView view in views)
-            {
-                if(view.GetInfo() == curInfo)
-                {
-                    view.DrawMidView(curClassName, curClass);
-                }
-            }
-        }
-
-        void DrawRightView()
-        {
-            foreach (IView view in views)
-            {
-                if (view.GetInfo() == curInfo)
-                {
-                    view.DrawRightView(curClassName, curClass);
-                }
-            }
-        }
+        //void DrawMidView()
+        //{
+        //    foreach(IView view in views)
+        //    {
+        //        if(view.GetInfo() == curInfo)
+        //        {
+        //            view.DrawMidView(curClassName, curClass);
+        //        }
+        //    }
+        //}
+        //
+        //void DrawRightView()
+        //{
+        //    foreach (IView view in views)
+        //    {
+        //        if (view.GetInfo() == curInfo)
+        //        {
+        //            view.DrawRightView(curClassName, curClass);
+        //        }
+        //    }
+        //}
 
 
     }
