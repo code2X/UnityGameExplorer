@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 using UnityEngine;
 
 namespace ExplorerSpace
 {
+    /// <summary>
+    /// Assembly Encapsulation 
+    /// </summary>
     class AssemblyClass
     {
         Assembly assembly;
