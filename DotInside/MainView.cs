@@ -15,36 +15,60 @@ namespace ExplorerSpace
         public virtual void Update() { }
     }
 
+    public abstract class IWindowView : IView
+    {
+        protected bool showWindow = false;
+
+        public override void OnGUI()
+        {
+            if (!showWindow) return;
+
+            ImGui.Begin(GetWindowName(), ref showWindow, GetWindowFlags());
+            DrawWindowContent();
+            ImGui.End();
+        }
+
+        public virtual ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.None;
+        public virtual string GetWindowName() => "ModalWindow";
+        public abstract void DrawWindowContent();
+    }
+
+    public class ISingletonWindowView<T>: IWindowView
+    {
+        static ISingletonWindowView<T> instance = new ISingletonWindowView<T>();
+        public static ISingletonWindowView<T> GetInstance() => instance;
+
+        public override void DrawWindowContent() => throw new NotImplementedException();
+    }
+
     class ClusteringClass
     {
         public SortedDictionary<string, SortedDictionary<string, Type>> main;
         public SortedDictionary<string, SortedDictionary<string, Type>> auto;
 
-        public ClusteringClass(SortedDictionary<string, Type> name2type)
+        public void AutoCluster(SortedDictionary<string, Type> name2type)
         {
             main = ClassCluster.GetMainCluster(name2type);
             auto = ClassCluster.GetAutoCluster(name2type);
         }
     }
 
-    class AssemblyExplorerView : IView
+    class AssemblyExplorerView : IWindowView
     {
-        string windowTitle;
+        public override string GetWindowName() => "Assembly Explorer";
         string processName;
         static ImGuiTableFlags tableFlags = ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.Resizable | ImGuiTableFlags.Reorderable | ImGuiTableFlags.Hideable;
 
         ClassView classInfoView;
-        SortedDictionary<string, SortedDictionary<string, Type>> mainClusterClass, autoClusterClass;
+        ClusteringClass clusteringClass;
         string searchText = "";
-        bool showWindow = true;
 
         static AssemblyExplorerView instance = new AssemblyExplorerView();
         public static AssemblyExplorerView GetInstance() => instance;
 
         public void AutoCluster(SortedDictionary<string, Type> name2type)
         {
-            mainClusterClass = ClassCluster.GetMainCluster(name2type);
-            autoClusterClass = ClassCluster.GetAutoCluster(name2type);
+            clusteringClass.AutoCluster(name2type);
         }
 
         public void AddSubView(IClassView classView)
@@ -58,28 +82,23 @@ namespace ExplorerSpace
             AddSubView(new MethodView());
             AddSubView(new PropertyView());
             AddSubView(new FieldView());
-            
-            mainClusterClass = new SortedDictionary<string, SortedDictionary<string, Type>>();
-            autoClusterClass = new SortedDictionary<string, SortedDictionary<string, Type>>();
-            windowTitle = "Assembly Explorer";
+
+            clusteringClass = new ClusteringClass();
             processName = Process.GetCurrentProcess().MainModule.ModuleName;
+            showWindow = true;
         }
 
-        public override void OnGUI()
+        public override void DrawWindowContent()
         {
-            if (!showWindow) return;
-
-            ImGui.Begin(windowTitle, ref showWindow,ImGuiWindowFlags.NoCollapse);
             ImGui.Text("Proccess:" + processName);
             ImGui.InputTextWithHint("","type to search", ref searchText, 20);
 
             ImGui.Text("Main Class");
-            DrawClassList(mainClusterClass, "MainClassTable");
+            DrawClassList(clusteringClass.main, "MainClassTable");
 
             ImGui.Text("Auto Cluster Class");
-            DrawClassList(autoClusterClass, "OtherClassTable");
+            DrawClassList(clusteringClass.auto, "OtherClassTable");
             DrawClassInfo();
-            ImGui.End();
         }
 
         public override void Update()
@@ -100,37 +119,39 @@ namespace ExplorerSpace
         {
             foreach (var state in class_dict)
             {
-                if (ImGui.CollapsingHeader(state.Key) &&
-                    ImGui.BeginTable(table_name, 2, tableFlags))
+                if (ImGui.CollapsingHeader(state.Key))
                 {
-                    ImGuiUtils.TableSetupHeaders("Class Name", "Parent Class");
-
-                    foreach (var class2type in class_dict[state.Key])
-                    {                      
-                        if (class2type.Key.IndexOf(searchText) != -1)
+                    ImGuiUtils.TableView(table_name, () =>
+                    {
+                        foreach (var class2type in class_dict[state.Key])
                         {
-                            ImGui.TableNextRow();
-                            DrawTableRow(class2type);
+                            if (class2type.Key.IndexOf(searchText) != -1)
+                            {
+                                ImGui.TableNextRow();
+                                DrawTableRow(class2type);
+                            }
                         }
-                    }
-                    ImGui.EndTable();
+                    }, tableFlags, "Class Name", "Parent Class");
                 }
             }
         }
 
         void DrawTableRow(KeyValuePair<string,Type> class2type)
         {
-            ImGui.TableSetColumnIndex(0);
-            if (ImGui.Button(class2type.Key))
+            ImGuiUtils.TableColumns(() =>
             {
-                classInfoView.Show(class2type.Value);
-            }
-            ImGui.TableSetColumnIndex(1);
-            ImGui.Text(class2type.Value.BaseType.Name);
+                if (ImGui.Button(class2type.Key))
+                {
+                    classInfoView.Show(class2type.Value);
+                }
+            }, () =>
+            {
+                ImGui.Text(class2type.Value.BaseType.Name);
+            });
         }
     }
 
-    class InstanceView : IView
+    class InstanceView : IWindowView
     {
         public class InstanceInfo
         {
@@ -148,8 +169,7 @@ namespace ExplorerSpace
             }
         }
 
-        static string windowTitle = "Instance Explorer";
-        static bool showWindow = false;
+        public override string GetWindowName() => "Instance Explorer";
         static InstanceInfo curInstance;
         static ArrayList subViews;
         static HashSet<InstanceInfo> instanceList = new HashSet<InstanceInfo>();
@@ -199,18 +219,11 @@ namespace ExplorerSpace
         }
         public static ImGuiTableFlags tableFlags = ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.Resizable | ImGuiTableFlags.Reorderable | ImGuiTableFlags.Hideable;
 
-        public override void OnGUI()
+        public override void DrawWindowContent()
         {
-            ImGui.Begin(windowTitle);
-
             DrawLeft();
             ImGui.SameLine();
             DrawRight();
-            ImGui.End();
-            if (showWindow)
-            {
-                //windowRect = GUI.Window(9999, windowRect, DrawInstanceWindow, "Instance Explorer");
-            }
         }
 
         public void DrawLeft()
@@ -221,10 +234,8 @@ namespace ExplorerSpace
             ImGui.Text("Instance List");
 
             InstanceInfo removeInfo = new InstanceInfo();
-            if (ImGui.BeginTable("InstanceTable", 4, tableFlags))
+            ImGuiUtils.TableView("InstanceTable", () =>
             {
-                ImGuiUtils.TableSetupHeaders("Parent", "Type", "Name", "Close");
-
                 foreach (InstanceInfo instance in instanceList)
                 {
                     ImGui.TableNextRow();
@@ -233,6 +244,7 @@ namespace ExplorerSpace
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0 + 1, ImGui.GetColorU32(color));
 
                     ImGuiUtils.TableTextRow(0, instance.parent, instance.type.Name);
+
                     ImGui.TableSetColumnIndex(2);
                     if (ImGui.Button(instance.name.ToString()))
                     {
@@ -245,8 +257,8 @@ namespace ExplorerSpace
                         removeInfo = instance;
                     }
                 }
-                ImGui.EndTable();
-            }
+            }, tableFlags, "Parent", "Type", "Name", "Close");
+
             if (removeInfo != null)
                 instanceList.Remove(removeInfo);
 

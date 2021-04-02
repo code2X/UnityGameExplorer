@@ -137,6 +137,8 @@ namespace ExplorerSpace
 
     public class PropertyView : IClassView
     {
+        static PropertyValueInputWindow valueInputWindow = PropertyValueInputWindow.GetInstance();
+
         public bool PropertyCanRead(PropertyInfo property) => GetClassInstance() != null || GetClass().StaticPropList.ContainsKey(property.Name);
         public override ClassInfo GetInfo() => ClassInfo.Field;
         public IPropertyDrawer propertyDrawer = new DefaultPropertyDrawer();
@@ -151,6 +153,7 @@ namespace ExplorerSpace
             {
                 DrawInstancePropertyTable(GetClass().StaticPropList);
             }
+            valueInputWindow.OnGUI();
         }
 
         public void DrawPropertyTable(
@@ -234,7 +237,7 @@ namespace ExplorerSpace
 
     class FieldView : IClassView
     {
-        protected ValueInputWindow valueInputWindow = new ValueInputWindow();
+        protected FieldValueInputWindow valueInputWindow = FieldValueInputWindow.GetInstance();
 
         public override ClassInfo GetInfo() => ClassInfo.Field;
         public IFieldDrawer fieldDrawer = new DefaultFieldDrawer();

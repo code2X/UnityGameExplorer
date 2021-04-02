@@ -4,27 +4,10 @@ using System;
 
 namespace ExplorerSpace
 {
-    public abstract class IWindowView: IView
-    {
-        protected bool showWindow = false;
-
-        public override void OnGUI()
-        {
-            if (showWindow)
-            {
-                ImGui.Begin(GetWindowName(), ref showWindow);
-                DrawWindowContent();
-                ImGui.End();
-            }
-        }
-
-        public virtual string GetWindowName() => "ModalWindow";
-        public abstract void DrawWindowContent();
-    }
 
     public abstract class IModalView : IView
     {
-        protected bool showWindow = false;
+        bool showWindow = false;
 
         public override void OnGUI()
         {
@@ -40,6 +23,8 @@ namespace ExplorerSpace
             }
         }
 
+        public virtual void ShowWindow() => showWindow = true;
+        public virtual void CloseWindow() => showWindow = false;
         public virtual string GetPopupName() => "ModalWindow";
         public abstract void DrawPopupContent();
     }
@@ -47,11 +32,6 @@ namespace ExplorerSpace
     public abstract class IParamInputModalView : IModalView
     {
         public static ParamInputTable paramTable = new ParamInputTable();
-    }
-
-    public abstract class IValueInputWindow : IParamInputModalView
-    {
-        public override string GetPopupName() => "Set Value";
     }
 
     public class ArrayInfoWindow : IWindowView
@@ -74,20 +54,28 @@ namespace ExplorerSpace
 
         public void Show(object instance = null, string name = "")
         {
-            this.showWindow = true;
+            this.showWindow = false;
             this.arrayInstance = instance;
             this.arrayName = name;
+            this.showWindow = true;
         }
 
         public override void DrawWindowContent()
         {
+            if (instance == null)
+                return;
+
             ImGui.Text(arrayInstance.GetType().ToString() + " " + arrayName);
+
             ImGui.BeginTable("ArrayInfo", 3);
             ImGuiUtils.TableSetupHeaders("Type", "Index", "Value");
 
             int index = 0;
             foreach (var i in (Array)arrayInstance)
             {
+                if (i == null)
+                    continue;
+
                 ImGui.TableNextRow();
                 ImGui.TableSetColumnIndex(0);
                 arrayDrawer.DrawType(i.GetType());
@@ -105,102 +93,9 @@ namespace ExplorerSpace
         }
     }
 
-    public class ArrayElementInputWindow : IParamInputModalView
-    {
-        public override string GetPopupName() => "Array Element Value";
-
-        //method
-        Array arrayObj;
-        object elementObj;
-        int elementIndex;
-
-        //error
-        bool inputErrored = false;
-
-        string inputText;
-
-        private ArrayElementInputWindow() { Reset(); }
-        static ArrayElementInputWindow instance = new ArrayElementInputWindow();
-        public static ArrayElementInputWindow GetInstance() => instance;
-
-        void Reset()
-        {
-            this.elementObj = null;
-            this.elementIndex = 0;
-            this.inputText = string.Empty;
-            this.inputErrored = false;
-        }
-
-        public void Show(Array array, object elementObj, int elementIndex)
-        {
-            Reset();
-            this.arrayObj = array;
-            this.elementObj = elementObj;
-            this.elementIndex = elementIndex;
-            this.inputText = elementObj.ToString();
-            this.showWindow = true;
-        }
-
-        public override void DrawPopupContent()
-        {
-            DrawTable();
-
-            if (ImGui.Button("OK"))
-            {
-                bool res = SetArrayElementValue(arrayObj, elementObj.GetType(), elementIndex, inputText);
-                if(res)
-                {
-                    inputErrored = false;
-                    showWindow = false;
-                }
-                else
-                {
-                    inputErrored = true;
-                }
-            }
-        }
-
-        public bool SetArrayElementValue(Array array, Type type, int index, string text)
-        {
-            if (array == null) 
-                return false;
-            if (index >= array.Length || index < 0) 
-                return false;
-
-            object parsedValue;
-            if (ValueSetter.Parse(type, text, out parsedValue))
-            {
-                bool res = Caller.Try(() =>
-                {
-                    array.SetValue(parsedValue, index);
-                });
-                return res;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        void DrawTable()
-        {
-            ImGuiUtils.BeginTableWithHeaders("ArrayElementInputTable","Type", "Index", "Value");
-            ImGui.TableNextRow();
-            paramTable.DrawParamRow(elementObj.GetType(), elementIndex.ToString(), ref inputText, inputErrored);
-            ImGui.EndTable();
-        }
-    }
-
     public class ParamInputTable
     {
         static System.Numerics.Vector4 errorColor = new System.Numerics.Vector4(0.4f, 0.1f, 0.1f, 0.65f);
-
-        public void DrawHeader()
-        {
-            ImGui.TableSetupScrollFreeze(0, 1); // Make top row always visible
-            ImGuiUtils.TableSetupColumn("Type", "Name", "Value");
-            ImGui.TableHeadersRow();
-        }
 
         public void DrawParamRow(Type type,string name, ref string inputText, bool error = false)
         {
@@ -260,7 +155,7 @@ namespace ExplorerSpace
             this.methodInfo = method;
             this.methodParameters = parameters;
             this.methodParentObj = parentObj;
-            this.showWindow = true;
+            ShowWindow();
 
             ResetInputText(parameters);
         }
@@ -277,17 +172,17 @@ namespace ExplorerSpace
 
         void DrawTable()
         {
-            ImGui.BeginTable("MethodInvokeTable", 3);
-            paramTable.DrawHeader();
-            for (int i = 0; i < methodParameters.Length; ++i)
+            ImGuiUtils.TableView("MethodInvokeTable", () =>
             {
-                ImGui.TableNextRow();
-                if (errorRow == i)
-                    paramTable.DrawParamRow(methodParameters[i].ParameterType,methodParameters[i].Name, ref inputText[i], true);
-                else
-                    paramTable.DrawParamRow(methodParameters[i].ParameterType, methodParameters[i].Name, ref inputText[i]);
-            }
-            ImGui.EndTable();
+                for (int i = 0; i < methodParameters.Length; ++i)
+                {
+                    ImGui.TableNextRow();
+                    if (errorRow == i)
+                        paramTable.DrawParamRow(methodParameters[i].ParameterType, methodParameters[i].Name, ref inputText[i], true);
+                    else
+                        paramTable.DrawParamRow(methodParameters[i].ParameterType, methodParameters[i].Name, ref inputText[i]);
+                }
+            }, "Type", "Name", "Value");
         }
 
         void CallMethod()
@@ -311,7 +206,7 @@ namespace ExplorerSpace
 
         void InvokeSuccess(object outObj)
         {
-            showWindow = false;
+            ShowWindow();
         }
 
         void InvokeError()
@@ -328,140 +223,170 @@ namespace ExplorerSpace
         }
     }
 
-    class FieldValueInputWindow: IValueInputWindow
+    public abstract class ValueInputWindowBase : IParamInputModalView
     {
-        FieldInfo varInfo;
-        object parentObj = null;
-        bool errored = false;
-        string InputText = "";
+        public override string GetPopupName() => "Set Value";
+        protected object parentObj = null;
+        protected bool errored = false;
+        protected string inputText = "";
+
+        public void doSuccess()
+        {
+            CloseWindow();
+        }
+
+        public void DrawTable(string tableName,Type type,string name)
+        {
+            ImGuiUtils.TableView(tableName, () =>
+            {
+                ImGui.TableNextRow();
+                paramTable.DrawParamRow(type, name, ref inputText, errored);
+            }, "Type", "Name", "Value");
+        }
 
         public void Reset()
         {
-            this.showWindow = false;
-            this.varInfo = null;
+            CloseWindow();
             this.parentObj = null;
             this.errored = false;
-            this.InputText = "";
+            this.inputText = "";
+        }
+    }
+
+    class FieldValueInputWindow: ValueInputWindowBase
+    {
+        FieldInfo varInfo;
+
+        private FieldValueInputWindow() { Reset(); }
+        static FieldValueInputWindow instance = new FieldValueInputWindow();
+        public static FieldValueInputWindow GetInstance() => instance;
+
+        public new void Reset()
+        {
+            base.Reset();
+            this.varInfo = null;
         }
 
         public void Show(FieldInfo varInfo, object parentObj = null)
         {
-            try
+            Reset();
+            Caller.Try(() =>
             {
-                this.InputText = varInfo.GetValue(parentObj).ToString();
-            }
-            catch (System.Exception exp)
-            {
-                this.InputText = "";
-                Logger.Error(exp);
-            }
-            this.errored = false;
-            this.showWindow = true;
+                this.inputText = varInfo.GetValue(parentObj).ToString();
+            });
+            ShowWindow();
             this.varInfo = varInfo;
             this.parentObj = parentObj;
         }
 
         public override void DrawPopupContent()
         {
-            ImGui.BeginTable("ValueInputTable", 3);
-            paramTable.DrawHeader();
-            ImGui.TableNextRow();
-            paramTable.DrawParamRow(varInfo.FieldType,varInfo.Name, ref InputText, errored);
-            ImGui.EndTable();
+            DrawTable("FieldValueInputTable", varInfo.FieldType, varInfo.Name);
 
             if (ImGui.Button("OK"))
             {
-                errored = !FieldValueSetter.TrySetValue(varInfo, InputText, parentObj);
+                errored = !FieldValueSetter.TrySetValue(varInfo, inputText, parentObj);
                 if (errored == false)
                 {
-                    showWindow = false;
+                    doSuccess();
                 }
             }
         }
     }
 
-    class ValueInputWindow : IParamInputModalView
+    class PropertyValueInputWindow : ValueInputWindowBase
     {
-        enum SetType
+        PropertyInfo propertyInfo;
+
+        private PropertyValueInputWindow() { Reset(); }
+        static PropertyValueInputWindow instance = new PropertyValueInputWindow();
+        public static PropertyValueInputWindow GetInstance() => instance;
+
+        public new void Reset()
         {
-            Null,
-            Property,
-            Field
+            base.Reset();
+            this.propertyInfo = null;
         }
 
-        public static string windowName = "Set Value";
-        static ParamInputTable paramTable = new ParamInputTable();
-
-        FieldInfo varInfo;
-        object parentObj = null;
-        bool errored = false;
-        string InputText = "";
-        SetType setType = SetType.Null;
-
-        public void Reset()
+        public void Show(PropertyInfo propertyInfo, object parentObj = null)
         {
-            this.showWindow = false;
-            this.varInfo = null;
-            this.parentObj = null;
-            this.errored = false;
-            this.InputText = "";
-            this.setType = SetType.Null;
-        }
-
-        public void Show(PropertyInfo propInfo, object parentObj = null)
-        {
-            try
+            Reset();
+            Caller.Try(() =>
             {
-                this.InputText = propInfo.GetValue(parentObj).ToString();
-            }
-            catch (System.Exception exp)
-            {
-                this.InputText = "";
-                Logger.Error(exp);
-            }
-            this.errored = false;
-            this.showWindow = true;
+                this.inputText = propertyInfo.GetValue(parentObj).ToString();
+            });
+            ShowWindow();
+            this.propertyInfo = propertyInfo;
             this.parentObj = parentObj;
-            this.setType = SetType.Property;
-        }
-
-        public void Show(FieldInfo varInfo, object parentObj = null)
-        {
-            try
-            {
-                this.InputText = varInfo.GetValue(parentObj).ToString();
-            }
-            catch(System.Exception exp)
-            {
-                this.InputText = "";
-                Logger.Error(exp);
-            }
-            this.errored = false;         
-            this.showWindow = true;
-            this.varInfo = varInfo;
-            this.parentObj = parentObj;
-            this.setType = SetType.Field;
         }
 
         public override void DrawPopupContent()
         {
-            ImGui.BeginTable("ValueInputTable", 3);
-            paramTable.DrawHeader();
-            ImGui.TableNextRow();
-            paramTable.DrawParamRow(varInfo.FieldType, varInfo.Name, ref InputText, errored);
-            ImGui.EndTable();
+            DrawTable("propertyValueInputTable", propertyInfo.PropertyType, propertyInfo.Name);
 
             if (ImGui.Button("OK"))
             {
-                errored = !FieldValueSetter.TrySetValue(varInfo,InputText, parentObj);
-                if(errored == false)
+                errored = !PropertyValueSetter.TrySetValue(propertyInfo, inputText, parentObj);
+                if (errored == false)
                 {
-                    showWindow = false;
+                    doSuccess();
                 }
             }
         }
 
+    }
 
+    public class ArrayElementInputWindow : ValueInputWindowBase
+    {
+        public override string GetPopupName() => "Array Element Value";
+
+        //method
+        Array arrayObj;
+        object elementObj;
+        int elementIndex;
+
+        private ArrayElementInputWindow() { Reset(); }
+        static ArrayElementInputWindow instance = new ArrayElementInputWindow();
+        public static ArrayElementInputWindow GetInstance() => instance;
+
+        public new void Reset()
+        {
+            base.Reset();
+            this.elementObj = null;
+            this.elementIndex = 0;
+        }
+
+        public void Show(Array array, object elementObj, int elementIndex)
+        {
+            Reset();
+            this.arrayObj = array;
+            this.elementObj = elementObj;
+            this.elementIndex = elementIndex;
+            Caller.Try(() =>
+            {
+                this.inputText = elementObj.ToString();
+            });
+            ShowWindow();
+        }
+
+        public override void DrawPopupContent()
+        {
+            DrawTable("ArrayElementInputTable", elementObj.GetType(), elementIndex.ToString());
+
+            if (ImGui.Button("OK"))
+            {
+                bool res = ArrayElementSetter.TrySetValue(arrayObj, elementObj.GetType(), elementIndex, inputText);
+                if (res)
+                {
+                    errored = false;
+                    CloseWindow();
+                }
+                else
+                {
+                    errored = true;
+                }
+            }
+        }
     }
 
 }

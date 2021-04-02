@@ -146,5 +146,30 @@ namespace ExplorerSpace
 
     }
 
+    public class ArrayElementSetter
+    {
+        public static bool TrySetValue(Array array, Type type, int index, string text)
+        {
+            if (array == null || type == null)
+                return false;
+            if (index >= array.Length || index < 0)
+                return false;
+
+            object parsedValue;
+            if (ValueSetter.Parse(type, text, out parsedValue))
+            {
+                bool res = Caller.Try(() =>
+                {
+                    array.SetValue(parsedValue, index);
+                });
+                return res;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
 
 }

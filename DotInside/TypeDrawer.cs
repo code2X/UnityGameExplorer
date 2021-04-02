@@ -62,7 +62,16 @@ namespace ExplorerSpace
 
         public override void DrawName(string name, Type type, Type parent, object instance = null)
         {
-            if (IsGeneralType(type) == false && type.IsEnum == false)
+            if(type.IsArray)
+            {
+                
+                if (ImGui.Button(name) && instance != null)
+                {
+                    //instance = new Mesh[5];
+                    ArrayInfoWindow.GetInstance().Show(instance, name);
+                }
+            }
+            else if (IsGeneralType(type) == false && type.IsEnum == false)
             {
                 if (ImGui.Button(name) && instance != null)
                 {
@@ -79,7 +88,6 @@ namespace ExplorerSpace
     public class DefaultArrayDrawer : IArrayDrawer
     {
         ITypeDrawer typeDrawer = new DefaultTypeDrawer();
-        static ValueInputWindow valueInputWindow = new ValueInputWindow();
 
         public override void DrawType(Type type)
         {
@@ -108,7 +116,7 @@ namespace ExplorerSpace
     public class DefaultFieldDrawer : IFieldDrawer
     {
         ITypeDrawer typeDrawer = new DefaultTypeDrawer();
-        static ValueInputWindow valueInputWindow = new ValueInputWindow();
+        static FieldValueInputWindow valueInputWindow = FieldValueInputWindow.GetInstance();
 
         public override void DrawType(Type type)
         {
@@ -139,7 +147,7 @@ namespace ExplorerSpace
                 {
                     Console.WriteLine("Showsdd");
 
-                    valueInputWindow.Show(field);
+                    valueInputWindow.Show(field, instance);
                 }
             });
         }
@@ -149,6 +157,7 @@ namespace ExplorerSpace
     public class DefaultPropertyDrawer : IPropertyDrawer
     {
         ITypeDrawer typeDrawer = new DefaultTypeDrawer();
+        static PropertyValueInputWindow valueInputWindow = PropertyValueInputWindow.GetInstance();
         public bool IsPropertyStatic(PropertyInfo property) => property.GetAccessors().Length > 0 && property.GetAccessors()[0].IsStatic;
 
         public override void DrawType(Type type)
@@ -172,13 +181,13 @@ namespace ExplorerSpace
                 {
                     ImGui.TableSetColumnIndex(2);
                     string value = property.GetValue(instance).ToString();
-                    if (property.CanWrite)
-                    {
-                        ImGui.Button(value);
-                    }
-                    else
+                    if( property.CanWrite == false)
                     {
                         ImGui.Text(value);
+                    }
+                    else if (ImGui.Button(value))
+                    {
+                        valueInputWindow.Show(property, instance);
                     }
                 });
             }
