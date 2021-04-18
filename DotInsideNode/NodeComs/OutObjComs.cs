@@ -5,55 +5,101 @@ using System.Reflection;
 
 namespace DotInsideNode
 {
-    class ObjectOC : INodeOutput
+    class ComObject
     {
         object m_Object = null;
         Type m_Type = null;
-        string m_Name = string.Empty; 
+        string m_Name = string.Empty;
+
+        public string Name
+        {
+            get => m_Name;
+            set => m_Name = value;
+        }
+
+        public object Object
+        {
+            get => m_Object;
+            set
+            {
+                if (m_Object == null)
+                {
+                    Logger.Warn("Set null object");
+                }
+
+                m_Object = value;
+            }
+        }
+
+        public Type Type
+        {
+            get => m_Type;
+            set
+            {
+                if (m_Type == null)
+                {
+                    Logger.Warn("Set null type");
+                }
+
+                m_Type = value;
+            }
+        }
+    }
+
+    class ObjectOC : INodeOutput
+    {
+        ComObject m_Object = new ComObject();
 
         public ObjectOC(Type type = null, object obj = null)
         {
-
-
-            m_Object = obj;
-            m_Type = type;
+            m_Object.Object = obj;
+            m_Object.Type = type;
         }
 
-        public void SetName(string str) => m_Name = str;
-        public object GetObject()
+        public string Text
         {
-            if (m_Object == null)
-            {
-                Logger.Warn("ObjectOC object is null");
-            }
-
-            return m_Object;
+            get => m_Object.Name;
+            set => m_Object.Name = value;
         }
-        public void SetObject(object obj) => m_Object = obj;
-        public Type GetObjectType()
+        public object Object
         {
-            if (m_Type == null)
-            {
-                Logger.Warn("ObjectOC type is null");
+            get
+            { 
+                if(m_Object.Object != null)
+                {
+                    return m_Object.Object;
+                }                    
+                else
+                {
+                    Assert.IsNotNull(ParentNode);
+                    return ParentNode.Request(RequestType.InstanceObject);
+                }
             }
-
-            return m_Type;
+            set => m_Object.Object = value;
         }
-        public void SetObjectType(Type type) => m_Type = type;
+        public Type ObjectType
+        {
+            get => m_Object.Type;
+            set => m_Object.Type = value;
+        }
 
         protected override void DrawContent()
         {
-            if (m_Type == null)
+            if (m_Object.Type != null && m_Object.Name != string.Empty)
             {
-                ImGui.TextUnformatted("");
+                ImGui.TextUnformatted(m_Object.Type.Name + "  " + m_Object.Name);
             }
-            else if(m_Name == string.Empty)
+            else if (m_Object.Type == null)
             {
-                ImGui.TextUnformatted(m_Type.Name);
-            }       
+                ImGui.TextUnformatted(m_Object.Name);
+            }
+            else if (m_Object.Name == string.Empty)
+            {
+                ImGui.TextUnformatted(m_Object.Type.Name);
+            }
             else
             {
-                ImGui.TextUnformatted(m_Type.Name + "  " + m_Name);
+                ImGui.TextUnformatted("");
             }
         }
 
@@ -64,19 +110,19 @@ namespace DotInsideNode
 
         public override void OnLinkDropped()
         {
-            if(m_Type != null)
-                PopupSelectList.GetInstance().Show(MethodTools.GetMethodList(m_Type), OnListSelected);
+            if(m_Object.Type != null)
+                PopupSelectList.GetInstance().Show(MethodTools.GetMethodList(m_Object.Type), OnListSelected);
         }
 
         void OnListSelected(string selected, int index)
         {
             Logger.Info(selected);
-            MethodInfo methodInfo = MethodTools.GetAllMethod(m_Type)[index];
+            MethodInfo methodInfo = MethodTools.GetAllMethod(m_Object.Type)[index];
             if (methodInfo == null) return;
 
             MethodNode endNode = new MethodNode(methodInfo);
-            NodeManager.GetInstance().AddNode(endNode);
-            LinkManager.GetInstance().TryCreateLink(this, endNode.GetTarget());
+            NodeManager.Instance.AddNode(endNode);
+            LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
         }
 
         public override object Request(RequestType type) 
@@ -84,10 +130,16 @@ namespace DotInsideNode
             switch(type)
             {
                 case RequestType.InstanceType:
-                    return m_Type;
+                    return ObjectType;
+                case RequestType.InstanceObject:
+                    return Object;
             }
-            return null;
+            throw new RequestTypeError(type);
         }
+    }
+
+    class BoolOC : ObjectOC
+    {
     }
 
 }

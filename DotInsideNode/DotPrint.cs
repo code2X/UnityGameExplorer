@@ -11,10 +11,17 @@ namespace DotInsideNode
         public static ImGuiTableFlags TableFlags = ImGuiTableFlags.Resizable | ImGuiTableFlags.Reorderable | ImGuiTableFlags.Hideable;
 
         NodeEditor m_NodeEditor = new NodeEditor();
-        VarManager m_VarManager = new VarManager();
+        VarManager m_VarManager = VarManager.Instance;
+        FunctionManager m_FunctionManager = FunctionManager.Instance;
+
+        TabBarView m_TabBarView = new TabBarView(); 
+        PrintRightView m_RightView = PrintRightView.Instance;
 
         DotPrint()
         {
+            m_FunctionManager.TabBar = m_TabBarView;
+            m_FunctionManager.NodeEditor = m_NodeEditor;
+
             m_NodeEditor.CreateMethod();
             ShowWindow();
         }
@@ -27,17 +34,26 @@ namespace DotInsideNode
 
             if (ImGui.BeginTable("EditorTable", 3, TableFlags))
             {
-                DotInsideLib.ImGuiUtils.TableSetupHeaders();
+                ImGuiUtils.TableSetupHeaders();
+
+                //Left
                 ImGui.TableSetColumnIndex(0);
                 DrawLeft();
+
+                //Middle
                 ImGui.TableSetColumnIndex(1);
                 DrawEditorTop();
+                m_TabBarView.Draw();
                 m_NodeEditor.DrawWindowContent();
+                
+                //Right
                 ImGui.TableSetColumnIndex(2);
                 DrawRight();
 
                 ImGui.EndTable();
+                
             }
+            DrawEditorBottom();
         }
 
         void DrawEditorTop()
@@ -49,38 +65,67 @@ namespace DotInsideNode
             ImGui.SameLine();
             ImGui.Button("Save");
             ImGui.SameLine();
-            ImGui.Button("Browse");
+            if(ImGui.Button("Play"))
+            {
+                try
+                {
+                    m_NodeEditor.Play();
+                }
+                catch(Exception exp)
+                {
+                    compileText = exp.ToString();
+                }
+            }
         }
 
         List<VarBase> varList = new List<VarBase>();
         void DrawLeft()
         {
+            DrawFunctionList();
+            DrawVaribaleList();
+        }
+
+        void DrawFunctionList()
+        {
             //Function
-            if( ImGui.Button("+##Function Create"))
+            if (ImGui.Button("+##Function Create"))
             {
-                m_NodeEditor.CreateMethod();
+                //m_NodeEditor.CreateMethod();
+                m_FunctionManager.AddFunction(new FunctionBase());
+                Console.WriteLine("IFunction Create");
             }
             ImGui.SameLine();
-            ImGui.CollapsingHeader("Functions");
+            if (ImGui.CollapsingHeader("Functions"))
+            {
+                m_FunctionManager.DrawFunctionList();
+            }
+        }
 
+        void DrawVaribaleList()
+        {
             //Variables
             if (ImGui.Button("+##Variables Create"))
             {
-                m_VarManager.AddVar(new BoolVar());
-                Console.WriteLine("Variables Create");
+                m_VarManager.AddVar();
+                Console.WriteLine("Variable Create");
             }
             ImGui.SameLine();
-            if(ImGui.CollapsingHeader("Variables"))
+            if (ImGui.CollapsingHeader("Variables"))
             {
-                m_VarManager.DrawVar();
+                m_VarManager.DrawVarList();
             }
+        }
+
+        
+        void DrawRight()
+        {
+            m_RightView.Draw();            
         }
 
         string compileText = "";
-        void DrawRight()
+        void DrawEditorBottom()
         {
             ImGui.InputTextMultiline("", ref compileText, 10000, new Vector2(ImGui.GetColumnWidth(), ImGui.GetTextLineHeight() * 16));
         }
-
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace DotInsideNode
 {
+    [EditorNode("Return")]
     class ReturnNode : ComNodeBase
     {
         TextTB m_TextTitleBar = new TextTB("Return");
@@ -27,5 +28,11 @@ namespace DotInsideNode
         {
             return "return;\n";
         }
+
+        protected override object ExecNode(int callerID, params object[] objects)
+        {
+            return null;
+        }
     }
+
 }

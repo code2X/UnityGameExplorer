@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AC05EFBE-7D3D-4DF4-87DF-E75D8CA0EA7B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotInsideLib</RootNamespace>
+    <AssemblyName>DotInside</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Math.cs" />
+    <Compile Include="Common\Reflection\AttributeTools.cs" />
+    <Compile Include="Common\Reflection\ClassTools.cs" />
+    <Compile Include="Common\Reflection\FieldTools.cs" />
+    <Compile Include="Common\Reflection\MethodTools.cs" />
+    <Compile Include="Common\Utils\Assert.cs" />
+    <Compile Include="DotInsideLib\dnVersion.cs" />
+    <Compile Include="DotInsideLib\DotInside.cs" />
+    <Compile Include="DotInsideLib\GIRerSurface.cs" />
+    <Compile Include="Common\ImGuiUtils.cs" />
+    <Compile Include="DotInsideLib\Gui\TypeDrawer.cs" />
+    <Compile Include="DotInsideLib\KeyCode.cs" />
+    <Compile Include="DotInsideNode\Function\IFunction.cs" />
+    <Compile Include="DotInsideNode\Manager\FunctionManager.cs" />
+    <Compile Include="DotInsideNode\Manager\LinkManager.cs" />
+    <Compile Include="DotInsideNode\Manager\LinkPool.cs" />
+    <Compile Include="DotInsideNode\Manager\NodeComponentManager.cs" />
+    <Compile Include="DotInsideNode\Manager\NodeManager.cs" />
+    <Compile Include="DotInsideNode\Manager\StyleManager.cs" />
+    <Compile Include="DotInsideNode\Manager\TManager.cs" />
+    <Compile Include="DotInsideNode\NodeComs\ButtonCom.cs" />
+    <Compile Include="DotInsideNode\NodeComs\ComAttrs.cs" />
+    <Compile Include="DotInsideNode\NodeComs\ComboComs.cs" />
+    <Compile Include="DotInsideNode\NodeComs\ExecComs.cs" />
+    <Compile Include="DotInsideNode\DotPrint.cs" />
+    <Compile Include="DotInsideNode\NodeComs\InObjCom.cs" />
+    <Compile Include="DotInsideNode\NodeComs\OutObjComs.cs" />
+    <Compile Include="DotInsideNode\NodeComs\TargetCom.cs" />
+    <Compile Include="DotInsideNode\NodeComs\TypeofCom.cs" />
+    <Compile Include="DotInsideNode\NodeComs\VarComs.cs" />
+    <Compile Include="DotInsideNode\Nodes\Convert\ConvertNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\Flow Control\FlipFlopNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\Flow Control\FlowControlNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\Flow Control\ForEachLoopNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\Flow Control\SequenceNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\Flow Control\WhileLoopNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\FieldSetter.cs" />
+    <Compile Include="DotInsideNode\Nodes\Flow Control\BranchNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\MethodNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\NodeAttrs.cs" />
+    <Compile Include="DotInsideNode\Nodes\NodeTooltips.cs" />
+    <Compile Include="DotInsideNode\Nodes\Operation\BoolOperationNodes.cs" />
+    <Compile Include="DotInsideNode\Nodes\Operation\EqualNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\Operation\OperationBase.cs" />
+    <Compile Include="DotInsideNode\Nodes\Operation\OperationNodes.cs" />
+    <Compile Include="DotInsideNode\Nodes\Operation\OperationStrategy.cs" />
+    <Compile Include="DotInsideNode\Nodes\PrintNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\TypeofNode.cs" />
+    <Compile Include="DotInsideNode\NodeEditor\NodeEditor.cs" />
+    <Compile Include="DotInsideNode\Nodes\FieldNode.cs" />
+    <Compile Include="DotInsideNode\NodeComs\INodeComs.cs" />
+    <Compile Include="DotInsideNode\NodeEditor\INodeEditorView.cs" />
+    <Compile Include="DotInsideNode\Nodes\INode.cs" />
+    <Compile Include="DotInsideNode\Type\diType.cs" />
+    <Compile Include="DotInsideNode\Utils\NodeLogger.cs" />
+    <Compile Include="DotInsideNode\Var\Container\ArrayContainer.cs" />
+    <Compile Include="DotInsideNode\Var\Container\IContainer.cs" />
+    <Compile Include="DotInsideNode\Var\Container\SetContainer.cs" />
+    <Compile Include="DotInsideNode\Var\Container\ValueContainer.cs" />
+    <Compile Include="DotInsideNode\Var\VarBase.cs" />
+    <Compile Include="DotInsideNode\Var\Var\ArrayVar.cs" />
+    <Compile Include="DotInsideNode\Var\Var\DictVar.cs" />
+    <Compile Include="DotInsideNode\Var\Var\SetVar.cs" />
+    <Compile Include="DotInsideNode\Var\Var\Variable.cs" />
+    <Compile Include="DotInsideNode\Var\VarAttrs.cs" />
+    <Compile Include="DotInsideNode\NodeComs\TextTitleCom.cs" />
+    <Compile Include="DotInsideNode\Nodes\MethodEntryNode.cs" />
+    <Compile Include="DotInsideNode\Nodes\ReturnNode.cs" />
+    <Compile Include="Common\Reflection\ClassInfo.cs" />
+    <Compile Include="Common\Reflection\ReflectionTools.cs" />
+    <Compile Include="Common\Reflection\TypeParser.cs" />
+    <Compile Include="Common\Utils\Assembler.cs" />
+    <Compile Include="Common\Utils\Caller.cs" />
+    <Compile Include="Common\Utils\ClassCluster.cs" />
+    <Compile Include="Common\Utils\Logger.cs" />
+    <Compile Include="Common\Utils\SinglePatch.cs" />
+    <Compile Include="DotInsideLib\Views\Class\InstanceView.cs" />
+    <Compile Include="DotInsideLib\Views\Class\ClassView.cs" />
+    <Compile Include="DotInsideLib\Views\Class\FieldView.cs" />
+    <Compile Include="DotInsideLib\Views\Class\MethodView.cs" />
+    <Compile Include="DotInsideLib\Views\Class\PropertyView.cs" />
+    <Compile Include="DotInsideLib\Views\Main\AssemblyExplorerView.cs" />
+    <Compile Include="DotInsideLib\Views\Main\InstanceView.cs" />
+    <Compile Include="DotInsideLib\Views\Main\IView.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\IModalView.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\ArrayElementInputWindow.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\ArrayInfoWindow.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\FieldValueInputWindow.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\MethodInvokeWindow.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\PropertyValueInputWindow.cs" />
+    <Compile Include="DotInsideLib\Views\Modal\ValueInputWindowBase.cs" />
+    <Compile Include="DotInsideNode\Test\ClassTest1.cs" />
+    <Compile Include="DotInsideNode\Var\IVar.cs" />
+    <Compile Include="DotInsideNode\Var\IVarSetterGetter.cs" />
+    <Compile Include="DotInsideNode\Manager\VarManager.cs" />
+    <Compile Include="DotInsideNode\Views\ListDrawer.cs" />
+    <Compile Include="DotInsideNode\Views\PopupSelectList.cs" />
+    <Compile Include="DotInsideNode\Views\PopupVarGetSet.cs" />
+    <Compile Include="DotInsideNode\Views\PrintRightView.cs" />
+    <Compile Include="DotInsideNode\Views\TabBarView.cs" />
+    <Compile Include="DotInsideNode\Views\TListDrawer.cs" />
+    <Compile Include="ImGui.NET\Framework4.0.cs" />
+    <Compile Include="ImGui.NET\Generated\ImColor.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawChannel.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawCmd.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawCmdHeader.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawData.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawList.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawListFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawListSplitter.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImDrawVert.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFont.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFontAtlas.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFontAtlasCustomRect.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFontAtlasFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFontConfig.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFontGlyph.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImFontGlyphRangesBuilder.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGui.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiBackendFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiButtonFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiCol.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiColorEditFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiComboFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiCond.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiConfigFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiDataType.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiDir.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiDockNodeFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiDragDropFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiFocusedFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiHoveredFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiInputTextCallbackData.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiInputTextFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiIO.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiKey.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiKeyModFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiListClipper.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiMouseButton.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiMouseCursor.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiNative.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiNavInput.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiOnceUponAFrame.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiPayload.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiPlatformIO.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiPlatformMonitor.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiPopupFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiSelectableFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiSizeCallbackData.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiSliderFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiSortDirection.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiStorage.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiStyle.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiStyleVar.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTabBarFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTabItemFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTableBgTarget.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTableColumnFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTableColumnSortSpecs.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTableFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTableRowFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTableSortSpecs.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTextBuffer.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTextFilter.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTextRange.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiTreeNodeFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiViewport.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiViewportFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiWindowClass.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\ImGuiWindowFlags.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\StbTexteditRow.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\StbUndoRecord.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\StbUndoState.gen.cs" />
+    <Compile Include="ImGui.NET\Generated\STB_TexteditState.gen.cs" />
+    <Compile Include="ImGui.NET\ImDrawData.Manual.cs" />
+    <Compile Include="ImGui.NET\ImDrawList.Manual.cs" />
+    <Compile Include="ImGui.NET\ImGui.Manual.cs" />
+    <Compile Include="ImGui.NET\ImGuiSizeCallback.cs" />
+    <Compile Include="ImGui.NET\ImGuiTextEditCallback.cs" />
+    <Compile Include="ImGui.NET\ImVector.cs" />
+    <Compile Include="ImGui.NET\NullTerminatedString.cs" />
+    <Compile Include="ImGui.NET\Pair.cs" />
+    <Compile Include="ImGui.NET\RangeAccessor.cs" />
+    <Compile Include="ImGui.NET\Util.cs" />
+    <Compile Include="ImNodes.NET\Generated\AttributeFlags.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\ColorStyle.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\EmulateThreeButtonMouse.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\ImNodes.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\ImNodesNative.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\IO.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\LinkDetachWithModifierClick.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\PinShape.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\Style.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\StyleFlags.gen.cs" />
+    <Compile Include="ImNodes.NET\Generated\StyleVar.gen.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DotInsideLib\GIRerSurface.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="ImGui.NET\build\net40\ImGui.NET.targets" />
+    <None Include="ImNodes.NET\ImNodes.NET.csproj" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DotInsideLib\Prints\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

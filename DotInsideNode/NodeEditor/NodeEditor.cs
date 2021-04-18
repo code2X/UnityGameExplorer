@@ -7,76 +7,113 @@ namespace DotInsideNode
     class NodeEditor: NodeEditorBase
     {
         public override string GetWindowName() => "NodeEditorTest";
-        MethodEntryNode entryNode = null;
-        ReturnNode returnNode = null;
+        MethodEntryNode m_EntryNode = new MethodEntryNode();
+        //ReturnNode m_ReturnNode = null;
+
+        List<string> m_SelectList = new List<string>();
+        SortedDictionary<string, System.Type> m_SelectDict = new SortedDictionary<string, System.Type>();
+        PopupSelectList m_PopupSelectList = PopupSelectList.GetInstance();
+        PopupVarGetSet m_PopupVarGetSet = PopupVarGetSet.Instance;
 
         public NodeEditor() 
         {
+            InitBluePrintNodeClasses(m_SelectDict);
+
             ShowWindow();
         }
+
+
+        void InitBluePrintNodeClasses(SortedDictionary<string, System.Type> nodeDict)
+        {
+            if (nodeDict.Count != 0)
+                return;
+            var attrList = AttributeTools.GetNamespaceCustomAttributes(typeof(EditorNode));
+            foreach (var pair in attrList)
+            {
+                EditorNode node = (EditorNode)pair.Value;
+                nodeDict.Add(node.Text, pair.Key);
+                Logger.Info("Editor Node: " + pair.Key);
+            }
+        }
+
         protected override void DrawContent()
         {
         }
 
         public void CreateMethod()
         {
-            if (entryNode != null) 
-                return;
-
-            entryNode = new MethodEntryNode();
-            returnNode = new ReturnNode();
-            AddNode(entryNode,false);
-            AddNode(returnNode, false);
-            LinkManager.GetInstance().TryCreateLink(entryNode.GetExecOutCom(), returnNode.GetExecInCom());
+            //m_ReturnNode = new ReturnNode();
+            AddNode(m_EntryNode,false);
+            //AddNode(m_ReturnNode, false);
+            //m_LinkManager.TryCreateLink(m_EntryNode.GetExecOutCom(), m_ReturnNode.GetExecInCom());
         }
 
         public string Compile()
         {
-            if(entryNode != null)
-                return entryNode.Compile();
-            return "";
+            return m_EntryNode.Compile();
+        }
+
+        public void Play()
+        {
+            NodeLogger.ExceStart();
+            m_EntryNode.Play(0);
         }
 
         protected override void DoEnd()
         {
-            List<string> list = new List<string>();
-            list.Add("DotPrint - Type of");
-            list.Add("DotPrint - Return");
-            list.Add("DotPrint - Field");
-            list.Add("DotPrint - Set Field");
-            list.Add("DotPrint - Bool Var");
-            ImGui.OpenPopupOnItemClick(PopupSelectList.GetInstance().GetPopupID());
-
-            if (ImGui.IsMouseDown(ImGuiMouseButton.Right))
-            {
-                PopupSelectList.GetInstance().Reset(list, OnListSelected);
-            }
-
-            PopupSelectList.GetInstance().Draw();
+            OnRightMenu();
+            OnVarDragDrop();
         }
 
-        void OnListSelected(string selected,int index)
+        void OnRightMenu()
         {
-            if(index == 0)
+            //Select List Menu
+            ImGui.OpenPopupOnItemClick(m_PopupSelectList.GetPopupID());
+            if (ImGui.IsMouseDown(ImGuiMouseButton.Right))
             {
-                AddNode(new TypeofNode());
+                m_PopupSelectList.Reset(m_SelectDict, OnRightMenuSelected);
             }
-            else if (index == 1)
+            m_PopupSelectList.DrawTypeDict();
+        }
+
+        unsafe void OnVarDragDrop()
+        {
+            if(ImGui.BeginDragDropTarget())
             {
-                AddNode(new ReturnNode());
+                ImGuiPayloadPtr pPayload = ImGui.AcceptDragDropPayload("VAR_DRAG");
+                if (pPayload.NativePtr != null)
+                {
+                    int varID = *(int*)pPayload.Data;
+                    m_PopupVarGetSet.Show(varID, OnSelectVarGetSet);
+                    Logger.Info("Var Drop. ID:" + varID);
+                }
             }
-            else if (index == 2)
+
+            m_PopupVarGetSet.Draw();
+        }
+
+        void OnSelectVarGetSet(VarBase variable, PopupVarGetSet.MenuType select_type)
+        {
+            Logger.Info("Var Menu Select:" + select_type);
+
+            switch(select_type)
             {
-                AddNode(new FieldNode());
+                case PopupVarGetSet.MenuType.Get:
+                    AddNode(variable.NewGetter());
+                    break;
+                case PopupVarGetSet.MenuType.Set:
+                    AddNode(variable.NewSetter());
+                    break;
             }
-            else if (index == 3)
-            {
-                AddNode(new FieldSetterNode());
-            }
-            else if (index == 4)
-            {
-                AddNode(new BoolVar.Getter());
-            }
+        }
+
+        void OnRightMenuSelected(string selected,int index)
+        {
+            Logger.Info("Right Menu Select. Name:" + selected + ", ID:"+ index);
+
+            System.Type type = m_SelectDict[selected];
+            INode nodeView = (INode)ClassTools.CallDefaultConstructor(type);
+            AddNode(nodeView);
         }
 
     }

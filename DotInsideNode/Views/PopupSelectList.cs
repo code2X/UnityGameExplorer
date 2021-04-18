@@ -15,23 +15,30 @@ namespace DotInsideNode
 
         string m_ID = "PopupSelectList";
         string m_InputText = "";
-        IList<string> m_StringList;
-        SelectHandler m_Handler;
+        IList<string> m_StringList = new List<string>();
+        SortedDictionary<string, System.Type> m_StringTypeDict;
+        SelectAction m_Handler;
 
         public string GetPopupID() => m_ID;
 
-        public delegate void SelectHandler(string select,int index);
+        public delegate void SelectAction(string select,int index);
 
-        public void Show(IList<string> strList, SelectHandler selectHandler = null)
+        public void Show(IList<string> strList, SelectAction selectHandler = null)
         {
             Reset(strList, selectHandler);
             ImGui.OpenPopup(m_ID);
         }
 
-        public void Reset(IList<string> strList, SelectHandler selectHandler = null)
+        public void Reset(IList<string> strList, SelectAction selectHandler = null)
         {
             m_Handler = selectHandler;
             m_StringList = strList;
+        }
+
+        public void Reset(SortedDictionary<string, System.Type> strTypeDict, SelectAction selectHandler = null)
+        {
+            m_Handler = selectHandler;
+            m_StringTypeDict = strTypeDict;
         }
 
         public void Draw()
@@ -39,6 +46,26 @@ namespace DotInsideNode
             if (ImGui.BeginPopup(m_ID, ImGuiWindowFlags.AlwaysAutoResize))
             {
                 DrawList();
+
+                ImGui.EndPopup();
+            }
+        }
+
+        public void DrawTypeDict()
+        {
+            if (ImGui.BeginPopup(m_ID, ImGuiWindowFlags.AlwaysAutoResize))
+            {
+                ImGui.InputTextWithHint("##seach text", "seach", ref m_InputText, 20);
+                int i = 0;
+                foreach (var pair in m_StringTypeDict)
+                {
+                    if (ImGui.Selectable(pair.Key) && m_Handler != null)
+                    {
+                        m_Handler(pair.Key, i);
+                        ++i;
+                    }
+                }
+                //DrawList();
 
                 ImGui.EndPopup();
             }

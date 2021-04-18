@@ -4,6 +4,74 @@ using System.Collections.Generic;
 
 namespace DotInsideNode
 {
+
+    class NodeComponentAttributeProcesser
+    {
+        void ProcessInComConnect(INodeInput com)
+        {
+            object[] attrs = com.GetType().GetCustomAttributes(true);
+            for (int i = 0; i < attrs.Length; i++)
+            {
+                if (attrs[i].GetType() == typeof(SingleConnect))
+                {
+                    LinkManager.Instance.TryRemoveLinkByEnd(com.ID);
+                }
+            }
+        }
+
+        void ProcessSingleConncect(INodeInput inCom)
+        {
+            SingleConnect singleConnect = (SingleConnect)Attribute.GetCustomAttribute(inCom.GetType(), typeof(SingleConnect));
+            if (singleConnect != null)
+            {
+                LinkManager.Instance.TryRemoveLinkByEnd(inCom.ID);
+            }
+        }
+        void ProcessSingleConncect(INodeOutput outCom)
+        {
+            SingleConnect singleConnect = (SingleConnect)Attribute.GetCustomAttribute(outCom.GetType(), typeof(SingleConnect));
+            if (singleConnect != null)
+            {
+                LinkManager.Instance.TryRemoveLinkByStart(outCom.ID);
+            }
+        }
+
+        bool ProcessConncectTypes(INodeInput inCom, INodeOutput outCom)
+        {
+            ConnectTypes connectTypes;
+            Type inComType = inCom.GetType();
+            Type outComType = outCom.GetType();
+
+            connectTypes = (ConnectTypes)Attribute.GetCustomAttribute(inComType, typeof(ConnectTypes));
+            if (connectTypes != null)
+            {
+                if (connectTypes.Contains(outComType) == false)
+                    return false;
+            }
+
+            connectTypes = (ConnectTypes)Attribute.GetCustomAttribute(outComType, typeof(ConnectTypes));
+            if (connectTypes != null)
+            {
+                if (connectTypes.Contains(inComType) == false)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool ComCanConnect(INodeInput inCom, INodeOutput outCom)
+        {
+            if (ProcessConncectTypes(inCom, outCom) == false)
+                return false;
+
+            ProcessSingleConncect(inCom);
+            ProcessSingleConncect(outCom);
+
+            return true;
+        }
+    }
+
+    [Serializable]
     class NodeComponentManager: ILinkEventObserver
     {
         Random s_Random = new Random();
@@ -12,14 +80,22 @@ namespace DotInsideNode
         Dictionary<int, INodeInput> g_InComponents = new Dictionary<int, INodeInput>();
         Dictionary<int, INodeOutput> g_OutComponents = new Dictionary<int, INodeOutput>();
 
-        LinkManager m_LinkManager = LinkManager.GetInstance();
+        NodeComponentAttributeProcesser m_ComAttrProcesser = new NodeComponentAttributeProcesser();
 
-        NodeComponentManager() 
+        public NodeComponentManager() 
         {
-            m_LinkManager.AttachEventObserver(this);
+            LinkManager.Instance.AttachEventObserver(this);
         }
-        static NodeComponentManager instance = new NodeComponentManager();
-        public static NodeComponentManager GetInstance() => instance;
+        public NodeComponentManager(LinkManager linkManager)
+        {
+            linkManager.AttachEventObserver(this);
+        }
+        static NodeComponentManager __instance = new NodeComponentManager();
+        public static NodeComponentManager Instance 
+        {
+            get => __instance;
+            set => __instance = value;
+        }
 
         bool TryConnectComponet(int start, int end)
         {
@@ -27,6 +103,11 @@ namespace DotInsideNode
             INodeOutput outCom;
             if (g_InComponents.TryGetValue(end, out inCom) && g_OutComponents.TryGetValue(start, out outCom))
             {
+                if(m_ComAttrProcesser.ComCanConnect(inCom,outCom) == false)
+                {
+                    return false;
+                }
+
                 return inCom.TryConnectBy(outCom) && outCom.TryConnectTo(inCom);
             }
             return false;
@@ -36,7 +117,7 @@ namespace DotInsideNode
         {
             if (TryConnectComponet(start, end))
             {
-                m_LinkManager.AddLink(new LinkPair(start, end));
+                LinkManager.Instance.AddLink(new LinkPair(start, end));
             }
         }
 
@@ -49,7 +130,7 @@ namespace DotInsideNode
             {
                 inCom.OnLinkStart();
             }
-            else if( g_OutComponents.TryGetValue(start, out outCom) )
+            if( g_OutComponents.TryGetValue(start, out outCom) )
             {
                 outCom.OnLinkStart();
             }
@@ -64,7 +145,7 @@ namespace DotInsideNode
             {
                 inCom.OnLinkDropped();
             }
-            else if (g_OutComponents.TryGetValue(start, out outCom))
+            if (g_OutComponents.TryGetValue(start, out outCom))
             {
                 outCom.OnLinkDropped();
             }
@@ -79,7 +160,7 @@ namespace DotInsideNode
             {
                 inCom.OnLinkDestroyed();
             }
-            else if (g_OutComponents.TryGetValue(start, out outCom))
+            if (g_OutComponents.TryGetValue(start, out outCom))
             {
                 outCom.OnLinkDestroyed();
             }
@@ -94,7 +175,7 @@ namespace DotInsideNode
             {
                 inCom.OnLinkHovered();
             }
-            else if (g_OutComponents.TryGetValue(start, out outCom))
+            if (g_OutComponents.TryGetValue(start, out outCom))
             {
                 outCom.OnLinkHovered();
             }
@@ -131,6 +212,16 @@ namespace DotInsideNode
             int id = AddComponet((INodeComponent)component);
             AddOutComponet(id, component);
             return id;
+        }
+
+        public void RemoveComponent(INodeComponent component)
+        {
+            int comID = component.ID;
+            g_Components.Remove(comID);
+            g_InComponents.Remove(comID);
+            g_OutComponents.Remove(comID);
+
+            component.OnComponentDestroyed();
         }
     }
 }

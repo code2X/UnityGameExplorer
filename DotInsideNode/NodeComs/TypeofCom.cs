@@ -1,8 +1,4 @@
-﻿using ImGuiNET;
-using imnodesNET;
-using System;
-using System.Collections.Generic;
-using DotInsideLib;
+﻿using System;
 using System.Reflection;
 
 namespace DotInsideNode
@@ -10,13 +6,16 @@ namespace DotInsideNode
     class TypeOC : INodeOutput
     {
         Type m_Type = null;
-        INodeInput m_ConnectTo = null;
+        INodeInput m_ConnectTo = new NullIC();
 
         public TypeOC(Type type)
         {
             m_Type = type;
         }
-        public void SetType(Type type) => m_Type = type;
+        public Type Type
+        {
+            set => m_Type = value;
+        }
 
         protected override void DrawContent()
         {
@@ -30,7 +29,7 @@ namespace DotInsideNode
 
         public override void DoComponentEnd()
         {
-            
+            PopupSelectList.GetInstance().Draw();
         }
 
         public override bool TryConnectTo(INodeInput component)
@@ -63,8 +62,8 @@ namespace DotInsideNode
             }
 
             MethodNode endNode = new MethodNode(methodInfo);
-            NodeManager.GetInstance().AddNode(endNode);
-            LinkManager.GetInstance().TryCreateLink(this, endNode.GetTarget());
+            NodeManager.Instance.AddNode(endNode);
+            LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
         }
 
         public override object Request(RequestType type)
@@ -73,8 +72,10 @@ namespace DotInsideNode
             {
                 case RequestType.InstanceType:
                     return m_Type;
+                case RequestType.InstanceObject:
+                    return null;
             }
-            return null;
+            throw new RequestTypeError(type);
         }
     }
 }

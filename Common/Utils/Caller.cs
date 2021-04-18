@@ -1,46 +1,41 @@
 ﻿using System;
 using System.Threading;
 
-namespace DotInsideLib
+public class Caller
 {
-    public class Caller
+    public static bool Try(Action func)
     {
-        public delegate void VoidFunc();
-
-        public static bool Try(VoidFunc func)
+        try
         {
-            try
-            {
-                func();
-                return true;
-            }
-            catch (Exception exp)
-            {
-                Logger.Error(exp);
-                return false;
-            }
+            func();
+            return true;
         }
-
-        public static void EnterMutex(Mutex mutex, VoidFunc voidFunc)
+        catch (Exception exp)
         {
-            if (mutex.WaitOne())
-            {
-                voidFunc();
-                mutex.ReleaseMutex();
-            }
+            Logger.Error(exp);
+            return false;
         }
+    }
 
-        public static void TryEnterMutex(Mutex mutex, VoidFunc voidFunc)
+    public static void EnterMutex(Mutex mutex, Action voidFunc)
+    {
+        if (mutex.WaitOne())
         {
-            try
-            {
-                EnterMutex(mutex, voidFunc);
-            }
-            catch (Exception exp)
-            {
-                mutex.ReleaseMutex();
-                Logger.Error(exp);
-            }
+            voidFunc();
+            mutex.ReleaseMutex();
+        }
+    }
+
+    public static void TryEnterMutex(Mutex mutex, Action voidFunc)
+    {
+        try
+        {
+            EnterMutex(mutex, voidFunc);
+        }
+        catch (Exception exp)
+        {
+            mutex.ReleaseMutex();
+            Logger.Error(exp);
         }
     }
 }

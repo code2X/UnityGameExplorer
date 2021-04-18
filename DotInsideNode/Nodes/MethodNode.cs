@@ -24,7 +24,7 @@ namespace DotInsideNode
         {
             if (method == null) return;
             m_Method = method;
-            m_TextTitleBar.SetText(method.Name);          
+            m_TextTitleBar.Title = method.Name;          
 
             AddComponet(m_TextTitleBar);
             AddComponet(m_ExecIC);
@@ -33,7 +33,7 @@ namespace DotInsideNode
 
             //if (method.ReturnType.IsValueType)
             //{
-                m_ObjectOC.SetObjectType(method.ReturnType);
+                m_ObjectOC.ObjectType = method.ReturnType;
                 AddComponet(m_ObjectOC);
             //}          
         }
@@ -56,8 +56,27 @@ namespace DotInsideNode
         public override string Compile()
         {
             string res = GetTarget().Compile() + "."+ m_Method.Name + "(" + ")"+ "\n";
-            res += m_ExecOC.GetConnectNode().Compile();
+            res += m_ExecOC.Compile();
             return res;
+        }
+
+        protected override object ExecNode(int callerID, params object[] objects)
+        {
+            if (m_Method == null)
+                return null;
+            if(m_Method.GetParameters().Length == 0)
+            {
+                object res = m_Method.Invoke(m_TargetIC.TargetObject, null);
+                m_ObjectOC.Object = res;
+            }           
+            return m_ExecOC.Play();
+        }
+
+        public override object Request(RequestType type)
+        {
+            if (m_Method == null)
+                return null;
+            return m_Method.Invoke(m_TargetIC.TargetObject,null);
         }
     }
 }

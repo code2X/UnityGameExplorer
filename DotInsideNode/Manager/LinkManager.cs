@@ -13,14 +13,18 @@ namespace DotInsideNode
         public virtual void NotifyLinkHovered(int start) { }
     }
 
+    [Serializable]
     class LinkManager
     {
         LinkPool m_LinkPool = new LinkPool();
         List<ILinkEventObserver> m_EventObservers = new List<ILinkEventObserver>();
 
-        LinkManager() { }
-        static LinkManager instance = new LinkManager();
-        public static LinkManager GetInstance() => instance;
+        static LinkManager __instance = new LinkManager();
+        public static LinkManager Instance
+        {
+            get => __instance;
+            set => __instance = value;
+        }
 
         public void Draw()
         {
@@ -41,6 +45,9 @@ namespace DotInsideNode
             m_EventObservers.Add(observer);
         }
 
+/// <summary>
+/// ------------ Event Notify
+/// </summary>
         void NotifyLinkCreatedEvent(int start_attr, int end_attr)
         {
             foreach (var observer in m_EventObservers)
@@ -81,6 +88,9 @@ namespace DotInsideNode
             }
         }
 
+/// <summary>
+/// ------------ Event Check
+/// </summary>
         void CheckLinkCreated()
         {
             int start_attr = -1, end_attr = -1;
@@ -126,6 +136,9 @@ namespace DotInsideNode
             }
         }
 
+/// <summary>
+/// ------------ Link Manager
+/// </summary>
         public void AddLink(LinkPair linkPair)
         {
             m_LinkPool.AddLink(linkPair);
@@ -143,43 +156,43 @@ namespace DotInsideNode
 
         public void TryCreateLink(INodeOutput start_node, INodeInput end_node)
         {
-            NotifyLinkCreatedEvent(start_node.GetID(), end_node.GetID());
+            NotifyLinkCreatedEvent(start_node.ID, end_node.ID);
         }
 
         public bool TryRemoveLinkByStart(int start)
         {
-            int id = -1;
-            if(m_LinkPool.TryGetLinkIDByStart(start, out id))
+            List<int> links;
+            if(m_LinkPool.TryGetLinkIDByStart(start, out links))
             {
-                LinkPair link;
-                if(m_LinkPool.TryGetLink(id, out link))
+                foreach(int link_id in links)
                 {
-                    if(m_LinkPool.RemoveLink(id))
+                    LinkPair linkPair;
+                    if (m_LinkPool.RemoveLink(link_id,out linkPair))
                     {
-                        NotifyLinkDestroyedEvent(link.start);
-                        NotifyLinkDestroyedEvent(link.end);
-                        return true;
-                    }                   
+                        NotifyLinkDestroyedEvent(linkPair.start);
+                        NotifyLinkDestroyedEvent(linkPair.end);
+                    }
                 }
+                return true;
             }
             return false;
         }
 
         public bool TryRemoveLinkByEnd(int start)
         {
-            int id = -1;
-            if (m_LinkPool.TryGetLinkIDByEnd(start, out id))
+            List<int> links;
+            if (m_LinkPool.TryGetLinkIDByEnd(start, out links))
             {
-                LinkPair link;
-                if (m_LinkPool.TryGetLink(id, out link))
+                foreach (int link_id in links)
                 {
-                    if (m_LinkPool.RemoveLink(id))
+                    LinkPair linkPair;
+                    if (m_LinkPool.RemoveLink(link_id, out linkPair))
                     {
-                        NotifyLinkDestroyedEvent(link.start);
-                        NotifyLinkDestroyedEvent(link.end);
-                        return true;
+                        NotifyLinkDestroyedEvent(linkPair.start);
+                        NotifyLinkDestroyedEvent(linkPair.end);
                     }
                 }
+                return true;
             }
             return false;
         }

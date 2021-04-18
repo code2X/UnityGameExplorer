@@ -7,99 +7,153 @@ using System.Reflection;
 
 namespace DotInsideNode
 {
-    class ExecIC : INodeInput
+    [ConnectTypes(typeof(ExecOC))]
+    public class ExecIC : INodeInput
     {
-        INodeOutput m_ConnectBy = null;
+        INodeOutput m_ConnectBy = new NullOC();
+        string m_Text = "Exec";
+        bool m_IsRuntime = false;
 
         public INodeOutput GetConnect() => m_ConnectBy;
-        public INodeView GetConnectNode()
+        public INode ConnectNode
         {
-            if(m_ConnectBy != null)
+            get
             {
-                return m_ConnectBy.GetParent();
+                return m_ConnectBy.ParentNode;
             }
-            return null;
+        }
+
+        public string Text
+        {
+            get => m_Text;
+            set => m_Text = value;
+        }
+
+        public bool IsRuntime
+        {
+            get => m_IsRuntime;
+            set => m_IsRuntime = value;
         }
 
         protected override void DrawContent()
         {
-            ImGui.TextUnformatted("Exec");
+            ImGui.TextUnformatted(m_Text);
         }
 
         public override bool TryConnectBy(INodeOutput component) 
         {
-            if (component.GetType().Name != typeof(ExecOC).Name)
-                return false;
-
             m_ConnectBy = component;
-            component.OnLinkStart();
-            Console.WriteLine("ExecIC ConnectBy");
+            Logger.Info("ExecIC ConnectBy");
             return true; 
+        }
+
+        public override object Play(params object[] objects)
+        {
+            m_IsRuntime = true;
+            ParentNode.Play(ID);
+            m_IsRuntime = false;
+
+            return null;
+        }
+        public override object Compile(params object[] objects)
+        {
+            m_IsRuntime = true;
+            ParentNode.Compile();
+            m_IsRuntime = false;
+
+            return null;
         }
 
         public override void OnLinkDestroyed()
         {
-            Console.WriteLine("ExecIC Link Destroyed");
-            m_ConnectBy = null;
+            Logger.Info("ExecIC Link Destroyed");
+            m_ConnectBy = new NullOC();
         }
 
         public override void OnLinkStart()
         {
-            Console.WriteLine("ExecIC Link Started");
-            LinkManager.GetInstance().TryRemoveLinkByEnd(GetID());
+          
+            Logger.Info("ExecIC Link Started");
         }
 
-        protected override PinShape GetPinShape() => PinShape.Triangle;
+        protected override PinShape GetPinShape() => m_ConnectBy is NullOC ? PinShape.Triangle : PinShape.TriangleFilled;
     }
 
-    class ExecOC : INodeOutput
+    [SingleConnect]
+    [ConnectTypes(typeof(ExecIC))]
+    public class ExecOC : INodeOutput
     {
-        INodeInput m_ConnectTo = null;
+        INodeInput m_ConnectTo = new NullIC();
+        string m_Text = "Exec";
+        bool m_IsRuntime = false;
 
-        public INodeInput GetConnect() => m_ConnectTo;
-        public INodeView GetConnectNode()
+        INodeInput ConnectCom
         {
-            if (m_ConnectTo != null)
-            {
-                return m_ConnectTo.GetParent();
-            }
-            return null;
+            get => m_ConnectTo;
+        }
+        INode ConnectNode
+        {
+            get => m_ConnectTo.ParentNode;
+        }
+
+        public bool IsRuntime
+        {
+            get => m_IsRuntime;
+            set => m_IsRuntime = value;
+        }
+
+        public string Text
+        {
+            get => m_Text;
+            set => m_Text = value;
         }
 
         protected override void DrawContent()
         {
-            ImGui.TextUnformatted("Exec");
+            ImGui.TextUnformatted(m_Text);
         }
 
         public override bool TryConnectTo(INodeInput component) 
         {
-            if (component.GetType().Name != typeof(ExecIC).Name)
-                return false;
-
             m_ConnectTo = component;
-            component.OnLinkStart();
-            Console.WriteLine("ExecOC ConnectTo");
+            Logger.Info("ExecOC ConnectTo");
             return true; 
+        }
+
+        public override object Play(params object[] objects)
+        {
+            m_IsRuntime = true;
+            object res = ConnectCom.Play();
+            m_IsRuntime = false;
+
+            return res;
+        }
+        public override object Compile(params object[] objects)
+        {
+            m_IsRuntime = true;
+            object res = ConnectCom.Compile();
+            m_IsRuntime = false;
+
+            return res;
         }
 
         public override void OnLinkDestroyed()
         {
             Console.WriteLine("ExecOC Link Destroyed");
-            m_ConnectTo = null;
+            m_ConnectTo = new NullIC();
         }
 
         public override void OnLinkStart() 
         {
-            Console.WriteLine("ExecOC Link Started");
-            LinkManager.GetInstance().TryRemoveLinkByStart(GetID());
+            Logger.Info("ExecOC Link Started");
         }
 
         public override void OnLinkDropped()
-        {
-            Console.WriteLine("ExecOC Link Dropped");
+        {           
+            Logger.Info("ExecOC Link Dropped");
         }
 
-        protected override PinShape GetPinShape() => PinShape.Triangle;
+        protected override PinShape GetPinShape() => m_ConnectTo is NullIC ? PinShape.Triangle:PinShape.TriangleFilled;
     }
 
 }

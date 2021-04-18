@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ImGuiNET;
 
-namespace DotInsideLib
+namespace ImGuiNET
 {
     public class ImGuiUtils
     {
@@ -53,32 +49,39 @@ namespace DotInsideLib
             }
         }
 
-        public delegate void VoidFunc();
-
-        public static void TableView(string name, VoidFunc callback, params string[] headers)
+        public static void TableView(string name, Action callback, params string[] headers)
         {
             TableView(name, callback, ImGuiTableFlags.None, headers);
         }
 
-        public static void TableView(string name, VoidFunc callback, ImGuiTableFlags flags, params string[] headers)
+        public static void PopupContextItemView(Action callback)
+        {
+            if (ImGui.BeginPopupContextItem())
+            {
+                callback?.Invoke();
+                ImGui.EndPopup();
+            }
+        }
+
+        public static void TableView(string name, Action callback, ImGuiTableFlags flags, params string[] headers)
         {
             int len = headers.Length;
             if (ImGui.BeginTable(name, len, flags))
             {
                 ImGuiUtils.TableSetupHeaders(headers);
 
-                callback();
+                callback?.Invoke();
                 ImGui.EndTable();
             }
         }
 
-        public static void TableColumns(params VoidFunc[] callbacks)
+        public static void TableColumns(params Action[] callbacks)
         {
             int len = callbacks.Length;
             for(int i=0; i < len; ++i)
             {
-                ImGui.TableSetColumnIndex(i);
-                callbacks[i]();
+                ImGui.TableNextColumn();
+                callbacks[i]?.Invoke();
             }
         }
     }

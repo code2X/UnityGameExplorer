@@ -8,4 +8,9 @@ class FieldTools
     {
         return type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
     }
+
+    public static FieldInfo[] GetStaticField(Type type)
+    {
+        return type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+    }
 }

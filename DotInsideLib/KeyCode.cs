@@ -123,9 +123,9 @@ enum Keys
 
     LeftShift = 0xa0,
     RightShift = 0xa1,
-    LeftControl = 0xa2,
+    LeftControl = 0x11,
     RightControl = 0xa3,
-    LeftAlt = 0xa4,
+    LeftAlt = 0x12,
     RightAlt = 0xa5,
     BrowserBack = 0xa6,
     BrowserForward = 0xa7,

@@ -1,9 +1,4 @@
 ﻿using ImGuiNET;
-using imnodesNET;
-using System;
-using System.Collections.Generic;
-using DotInsideLib;
-using System.Reflection;
 
 namespace DotInsideNode
 {
@@ -11,17 +6,57 @@ namespace DotInsideNode
     class TextTB : INodeTitleBar
     {
         string m_Text;
+        string m_Tooltip = string.Empty;
+        string m_TooltipDetails = string.Empty;
 
         public TextTB(string text = "")
         {
-            SetText(text);
+            Title = text;
         }
 
-        public void SetText(string text) => m_Text = text; 
+        public string Title
+        {
+            get => m_Text;
+            set => m_Text = value;
+        }
+
+        public string Tooltip
+        {
+            get
+            {
+                return NodeTooltips.GetTooltip(ParentNode.GetType());
+            }
+            //set => m_Tooltip = value;
+        }
+
+        public string TooltipDetails
+        {
+            get => m_TooltipDetails;
+            set => m_TooltipDetails = value;
+        }
+
+        void DrawTooltip()
+        {
+            if (ImGui.IsItemHovered())
+            {
+
+                if (ImGui.IsKeyDown((int)Keys.LeftControl) && ImGui.IsKeyDown((int)Keys.LeftAlt))
+                {
+                    ImGui.SetTooltip(m_TooltipDetails);
+                }               
+                else
+                {
+                    string tooltip = Tooltip;
+                    if(tooltip != string.Empty)
+                        ImGui.SetTooltip(Tooltip);
+                }                 
+            }
+        }
 
         protected override void DrawContent()
         {
             ImGui.TextUnformatted(m_Text);
+            DrawTooltip();
         }
     }
 

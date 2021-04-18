@@ -45,7 +45,6 @@ namespace DotInsideLib
         public string typeName = "";
         public Type type;
 
-        [NodeCompAttr(ComponentType.Output,"Fields",typeof(FieldInfo))]
         public SortedList<string, FieldInfo> FieldList
         {
             get
@@ -54,7 +53,7 @@ namespace DotInsideLib
             }
         }
 
-        [NodeCompAttr(ComponentType.Output, "Propertys",typeof(PropertyInfo))]
+        //[NodeCompAttr(ComponentType.Output, "Propertys",typeof(PropertyInfo))]
         public SortedList<string, PropertyInfo> PropList
         {
             get

@@ -6,8 +6,17 @@ using imnodesNET;
 
 namespace DotInsideNode
 {
+    [EditorNode("Type of")]
     class TypeofNode : NodeBase
     {
+        class SelectItemNoExist : Exception
+        {
+            public SelectItemNoExist(string item, int index)
+                :
+                base("Item: " + item + ", Index: " + index)
+            { }
+        }
+
         public static SortedList<string, CsharpClass> classList = DotInside.classListDetails;
         CsharpClass m_Class = null;
 
@@ -15,59 +24,36 @@ namespace DotInsideNode
         ComboSC m_NodeCombo;
         TypeOC m_NodeTypeOutput;
 
-        //public void Init()
-        //{
-        //    Type info = typeof(CsharpClass);
-        //    var propertys = info.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-        //
-        //    foreach (var prop in propertys)
-        //    {
-        //        object[] attributes = prop.GetCustomAttributes(true);
-        //        for (int i = 0; i < attributes.Length; i++)
-        //        {
-        //            NodeCompAttr comp = (NodeCompAttr)attributes[i];
-        //            if (comp.CompType == ComponentType.Output)
-        //            {
-        //                nodeComponents.Add(new NodeTextOutput(comp.Name));
-        //            }
-        //        }
-        //    }
-        //}
-
         public TypeofNode()
         {
-            var enumerator = classList.GetEnumerator();
-            enumerator.MoveNext();
-            m_Class = enumerator.Current.Value;
+            m_Class = classList.Values[0];
 
             m_NodeTypeOutput = new TypeOC(m_Class.type);
             m_NodeCombo = new ComboSC(classList.Keys);
-            m_NodeCombo.OnSelect += new ComboSC.SelectHandler(OnClassSelect);
+            m_NodeCombo.OnSelected += new ComboSC.SelectAction(OnClassTypeSelected);
 
             AddComponet(m_TextTitleBar);
             AddComponet(m_NodeCombo);
-            AddComponet(m_NodeTypeOutput);   
+            AddComponet(m_NodeTypeOutput);
         }
 
-        void OnClassSelect(string item)
+        void OnClassTypeSelected(string item,int index)
         {
             if(classList.TryGetValue(item,out m_Class))
             {
-                m_NodeTypeOutput.SetType(m_Class.type);
-                System.Console.WriteLine(item);
+                m_NodeTypeOutput.Type = m_Class.type;
+                Logger.Info("Type List Select:" + item);               
             }           
+            else
+            {
+                throw new SelectItemNoExist(item, index);
+            }
         }
 
         public override string Compile()
         {
             string res = "typeof(" + m_Class.typeName + ")";
             return res;
-        }
-
-        protected override void DrawContent()
-        {
-            //imnodesNET.imnodes.Lin
-            //System.Console.WriteLine(classListDetails.Count);
         }
     }
 }

@@ -54,7 +54,9 @@ namespace DotInsideLib
             {
                 Assembler assembly = new Assembler(path);
                 SortedDictionary<string, Type> className2Type = assembly.GetTypeDict();
-            
+                className2Type.Clear();
+                className2Type = DotInsideNode.ClassTest.classList;
+
                 explorerView = AssemblyExplorerView.GetInstance();
                 explorerView.AutoCluster(className2Type);
             

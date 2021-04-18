@@ -7,14 +7,24 @@ namespace DotInsideNode
 {
     abstract class INodeEditorView : IWindowView
     {
+        bool m_Open = false;
+
         public override void DrawWindowContent()
         {
+            if (!m_Open)
+                return;
             DoNodeEditorStart();
             imnodes.BeginNodeEditor();
-            DrawNodeEditorContent();
+            DrawNodeEditorContent();        
             imnodes.EndNodeEditor();
             DoNodeEditorEnd();
         }
+        public bool IsOpen
+        {
+            get => m_Open;
+        }
+        public void Open() => m_Open = true;
+        public void Close() => m_Open = false;
 
         protected virtual void DoNodeEditorStart() { }
         protected abstract void DrawNodeEditorContent();
@@ -23,18 +33,15 @@ namespace DotInsideNode
 
     class NodeEditorBase: INodeEditorView
     {
-        LinkManager m_LinkManager = LinkManager.GetInstance();
-        NodeManager m_NodeManager = NodeManager.GetInstance();
-
-        public void AddNode(INodeView nodeView,bool mosuePos = true)
+        public void AddNode(INode nodeView,bool atMosuePos = true)
         {
-            m_NodeManager.AddNode(nodeView, mosuePos);
+            NodeManager.Instance.AddNode(nodeView, atMosuePos);
         }
 
         protected sealed override void DrawNodeEditorContent()
         {
-            m_NodeManager.Draw();
-            m_LinkManager.Draw();
+            NodeManager.Instance.Draw();
+            LinkManager.Instance.Draw();
             DrawContent();
         }
 
@@ -45,8 +52,8 @@ namespace DotInsideNode
 
         protected override void DoNodeEditorEnd() 
         {
-            m_NodeManager.DoEnd();
-            m_LinkManager.Update();
+            NodeManager.Instance.Update();
+            LinkManager.Instance.Update();
             DoEnd();
         }
 

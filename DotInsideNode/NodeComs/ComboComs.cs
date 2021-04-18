@@ -5,8 +5,8 @@ namespace DotInsideNode
 {
     class ComboSC : INodeStatic
     {
-        public delegate void SelectHandler(string item);
-        public event SelectHandler OnSelect;
+        public delegate void SelectAction(string item,int index);
+        public event SelectAction OnSelected;
 
         int m_CurItem;
         IList<string> m_Items;
@@ -18,16 +18,22 @@ namespace DotInsideNode
             m_CurItem = current_item;
         }
 
-        public void SetItemLsit(IList<string> items) => m_Items = items;
-        public string GetCurItem() => m_Items[m_CurItem];
+        public IList<string> ItemList
+        {
+            set => m_Items = value;
+        }
+        string CurItem
+        { 
+            get => m_Items [m_CurItem];
+        }
 
         protected override void DrawContent()
         {
-            if (m_Items == null) return;
+            if (m_Items == null || m_Items.Count == 0) return;
 
             if (ImGui.BeginCombo(m_Items[m_CurItem], "", ImGuiComboFlags.NoPreview))
             {
-                ImGui.InputTextWithHint("select class", "search", ref m_SearchText, 20);
+                ImGui.InputTextWithHint("##select class", "search", ref m_SearchText, 20);
                 for (int n = 0; n < m_Items.Count; n++)
                 {
                     //seach text
@@ -50,8 +56,7 @@ namespace DotInsideNode
         void DoSelect(int index)
         {
             m_CurItem = index;
-            if(OnSelect != null)
-                OnSelect(GetCurItem());
+            OnSelected?.Invoke(CurItem, index);
         }
     }
 }

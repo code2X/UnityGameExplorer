@@ -7,36 +7,37 @@ using System.Reflection;
 
 namespace DotInsideNode
 {
+    [SingleConnect]
+    [ConnectTypes(typeof(ObjectOC),typeof(TypeOC))]
     class TargetIC : INodeInput
     {
-        object m_Target = null;
-        Type m_TargetType = null;
-        INodeOutput m_ConnectBy = null;
-        //Type m_Type;
+        INodeOutput m_ConnectBy = new NullOC();
+        Type m_TargetType;
         public delegate void TypeHandler(Type type);
         public event TypeHandler OnSetTargetType;
 
-        public TargetIC()
+        public INodeOutput Target
         {
+            get => m_ConnectBy;
         }
-        public object GetTarget() => m_Target;
-        public void SetTarget(object target) => m_Target = target;
-        public Type GetTargetType() => m_TargetType;
-        public void SetTargetType(Type type)
+        public object TargetObject
         {
-            if(OnSetTargetType != null)
-                OnSetTargetType(type);
-            m_TargetType = type;
+            get => m_ConnectBy.Request(RequestType.InstanceObject);
+        }
+        public Type TargetType
+        {
+            get => m_TargetType;
+            set
+            {
+                if (OnSetTargetType != null)
+                    OnSetTargetType(value);
+                m_TargetType = value;
+            }
         }
 
         protected override void DrawContent()
         {
             ImGui.TextUnformatted("Target");
-        }
-
-        public override void OnLinkStart()
-        {
-            LinkManager.GetInstance().TryRemoveLinkByEnd(GetID());
         }
 
         public override void DoComponentEnd()
@@ -47,13 +48,13 @@ namespace DotInsideNode
         public override bool TryConnectBy(INodeOutput component)
         {
             m_ConnectBy = component;
-            SetTargetType((Type)m_ConnectBy.Request(RequestType.InstanceType) );
+            TargetType = m_ConnectBy.Request(RequestType.InstanceType) as Type;
             return true;
         }
 
         public string Compile()
         {
-            return m_ConnectBy.GetParent().Compile();
+            return m_ConnectBy.ParentNode.Compile();
         }
 
     }

@@ -1,52 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using DotInsideLib;
 
-namespace DotInsideLib
+/// <summary>
+/// Assembly Encapsulation 
+/// </summary>
+public class Assembler
 {
-    /// <summary>
-    /// Assembly Encapsulation 
-    /// </summary>
-    public class Assembler
+    Assembly assembly;
+    public Type[] GetTypeList() => assembly.GetExportedTypes();
+
+    public Assembler(string filePath)
     {
-        Assembly assembly;
-        public Type[] GetTypeList() => assembly.GetExportedTypes();
-
-        public Assembler(string filePath)
+        Caller.Try(() =>
         {
-            Caller.Try(() =>
-            {
-                assembly = Assembly.LoadFrom(filePath);
-            });
-        }      
+            assembly = Assembly.LoadFrom(filePath);
+        });
+    }      
 
-        public SortedDictionary<string, Type> GetTypeDict(bool emptyNamespace = true)
+    public SortedDictionary<string, Type> GetTypeDict(bool emptyNamespace = true)
+    {
+        SortedDictionary<string, Type> sortDict = new SortedDictionary<string, Type>();
+
+        Caller.Try(() =>
         {
-            SortedDictionary<string, Type> sortDict = new SortedDictionary<string, Type>();
-
-            Caller.Try(() =>
+            foreach (var i in GetTypeList())
             {
-                foreach (var i in GetTypeList())
+                if (!emptyNamespace)
                 {
-                    if (!emptyNamespace)
-                    {
-                        TryAddKey(i);
-                    }
-                    else if (i.Namespace == null)
-                    {
-                        TryAddKey(i);
-                    }
+                    TryAddKey(i);
                 }
-            });
-
-            return sortDict;
-
-            void TryAddKey(Type i)
-            {
-                if (sortDict.ContainsKey(i.Name) == false && i.IsGenericType == false)
-                    sortDict.Add(i.Name, i);
+                else if (i.Namespace == null)
+                {
+                    TryAddKey(i);
+                }
             }
+        });
+
+        return sortDict;
+
+        void TryAddKey(Type i)
+        {
+            if (sortDict.ContainsKey(i.Name) == false && i.IsGenericType == false)
+                sortDict.Add(i.Name, i);
         }
     }
 
+    public static Type[] GetNamespaceTypes()
+    {
+        return Assembly.GetExecutingAssembly().GetTypes();
+    }
+
 }
+
