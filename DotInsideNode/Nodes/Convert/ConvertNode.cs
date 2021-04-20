@@ -30,14 +30,14 @@ namespace DotInsideNode
             ImGui.Text("To Int");
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(int);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return System.Convert.ToInt32(m_ObjectIC.Object);
             }
             throw new RequestTypeError(type);
@@ -52,14 +52,14 @@ namespace DotInsideNode
             ImGui.Text("To Float");
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
 
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(int);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return System.Convert.ToSingle(m_ObjectIC.Object);
             }
             throw new RequestTypeError(type);
@@ -74,14 +74,14 @@ namespace DotInsideNode
             ImGui.Text("To Double");
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
 
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(int);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return System.Convert.ToDouble(m_ObjectIC.Object);
             }
             throw new RequestTypeError(type);

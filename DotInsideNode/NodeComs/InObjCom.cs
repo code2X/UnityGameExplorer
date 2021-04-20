@@ -28,7 +28,7 @@ namespace DotInsideNode
             get
             {
                 Assert.IsNotNull(m_ConnectBy);
-                return m_ConnectBy.Request(RequestType.InstanceObject);
+                return m_ConnectBy.Request(ERequest.InstanceObject);
             }           
         }
         public void SetObject(object obj) => m_Object.Object = obj;
@@ -37,15 +37,15 @@ namespace DotInsideNode
 
         protected override void DrawContent()
         {
-            if(m_Object.Type != null && m_Object.Name != string.Empty)
+            if(m_Object.Type != null && Text != string.Empty)
             {
-                ImGui.TextUnformatted(m_Object.Type.Name + "  " + m_Object.Name);
+                ImGui.TextUnformatted(m_Object.Type.Name + "  " + Text);
             }
             else if (m_Object.Type == null)
             {
-                ImGui.TextUnformatted(m_Object.Name);
+                ImGui.TextUnformatted(Text);
             }
-            else if (m_Object.Name == string.Empty)
+            else if (Text == string.Empty)
             {
                 ImGui.TextUnformatted(m_Object.Type.Name);
             }
@@ -58,32 +58,44 @@ namespace DotInsideNode
         public override bool TryConnectBy(INodeOutput component)
         {
             m_ConnectBy = component;
-            m_Object.Type = (Type)m_ConnectBy.Request(RequestType.InstanceType);
+            m_Object.Type = (Type)m_ConnectBy.Request(ERequest.InstanceType);
             return true;
         }
 
-        public override void OnLinkDropped()
+        public override void LinkEventProc(ELinkEvent eEvent)
         {
-            m_ConnectBy = new NullOC();
+            switch (eEvent)
+            {
+                case ELinkEvent.Started:
+                    Logger.Info("ObjectIC Link Started");
+                    break;
+                case ELinkEvent.Dropped:
+                    Logger.Info("ObjectIC Link Dropped");
+                    break;
+                case ELinkEvent.Destroyed:
+                    Logger.Info("ObjectIC Link Destroyed");
+                    m_ConnectBy = new NullOC();
+                    break;
+            }
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return m_Object.Type;
             }
             throw new RequestTypeError(type, m_ConnectBy);
         }
 
-        public override object SendMessage(MessageType type)
+        public override object SendMessage(EMessage type)
         {
             switch (type)
             {
-                case MessageType.InstanceTypeChange:
-                    m_Object.Type = (Type)m_ConnectBy.Request(RequestType.InstanceType);
-                    break;
+                case EMessage.InstanceTypeChange:
+                    m_Object.Type = (Type)m_ConnectBy.Request(ERequest.InstanceType);
+                    return m_Object.Type;
             }
             throw new MessageTypeError(type, m_ConnectBy);
         }

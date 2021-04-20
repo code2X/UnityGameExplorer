@@ -33,13 +33,13 @@ namespace DotInsideNode
             return res;
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(bool);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return DoEqual();
             }
             throw new RequestTypeError(type);
@@ -55,13 +55,13 @@ namespace DotInsideNode
             m_TextTitleBar.Title = "!=";
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(bool);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return !DoEqual();
             }
             throw new RequestTypeError(type);

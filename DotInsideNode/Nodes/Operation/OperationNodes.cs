@@ -26,13 +26,13 @@ namespace DotInsideNode
             return null;
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(object);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return DoArithmetic();
             }
             throw new RequestTypeError(type);

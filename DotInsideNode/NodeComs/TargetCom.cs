@@ -22,7 +22,7 @@ namespace DotInsideNode
         }
         public object TargetObject
         {
-            get => m_ConnectBy.Request(RequestType.InstanceObject);
+            get => m_ConnectBy.Request(ERequest.InstanceObject);
         }
         public Type TargetType
         {
@@ -48,7 +48,7 @@ namespace DotInsideNode
         public override bool TryConnectBy(INodeOutput component)
         {
             m_ConnectBy = component;
-            TargetType = m_ConnectBy.Request(RequestType.InstanceType) as Type;
+            TargetType = m_ConnectBy.Request(ERequest.InstanceType) as Type;
             return true;
         }
 

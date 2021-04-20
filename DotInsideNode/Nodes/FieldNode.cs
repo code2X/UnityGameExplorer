@@ -67,14 +67,14 @@ namespace DotInsideNode
             }
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             Assert.IsNotNull(m_FieldInfo);
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return m_FieldInfo.FieldType;
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return m_FieldInfo.GetValue(m_TargetIC.TargetObject);
             }
 

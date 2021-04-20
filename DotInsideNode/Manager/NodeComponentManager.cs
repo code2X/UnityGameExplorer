@@ -72,7 +72,7 @@ namespace DotInsideNode
     }
 
     [Serializable]
-    class NodeComponentManager: ILinkEventObserver
+    class NodeComponentManager:Singleton<NodeComponentManager>,ILinkEventObserver
     {
         Random s_Random = new Random();
 
@@ -89,12 +89,6 @@ namespace DotInsideNode
         public NodeComponentManager(LinkManager linkManager)
         {
             linkManager.AttachEventObserver(this);
-        }
-        static NodeComponentManager __instance = new NodeComponentManager();
-        public static NodeComponentManager Instance 
-        {
-            get => __instance;
-            set => __instance = value;
         }
 
         bool TryConnectComponet(int start, int end)
@@ -113,7 +107,7 @@ namespace DotInsideNode
             return false;
         }
 
-        public override void NotifyLinkCreated(int start,int end)
+        public virtual void NotifyLinkCreated(int start,int end)
         {
             if (TryConnectComponet(start, end))
             {
@@ -121,63 +115,63 @@ namespace DotInsideNode
             }
         }
 
-        public override void NotifyLinkStarted(int start)
+        public virtual void NotifyLinkStarted(int start)
         {
             INodeInput inCom;
             INodeOutput outCom;
 
             if ( g_InComponents.TryGetValue(start, out inCom) )
             {
-                inCom.OnLinkStart();
+                inCom.LinkEventProc(ELinkEvent.Started);
             }
             if( g_OutComponents.TryGetValue(start, out outCom) )
             {
-                outCom.OnLinkStart();
+                outCom.LinkEventProc(ELinkEvent.Started);
             }
         }
 
-        public override void NotifyLinkDropped(int start)
+        public virtual void NotifyLinkDropped(int start)
         {
             INodeInput inCom;
             INodeOutput outCom;
 
             if (g_InComponents.TryGetValue(start, out inCom))
             {
-                inCom.OnLinkDropped();
+                inCom.LinkEventProc(ELinkEvent.Dropped);
             }
             if (g_OutComponents.TryGetValue(start, out outCom))
             {
-                outCom.OnLinkDropped();
+                outCom.LinkEventProc(ELinkEvent.Dropped);
             }
         }
 
-        public override void NotifyLinkDestroyed(int start)
+        public virtual void NotifyLinkDestroyed(int start)
         {
             INodeInput inCom;
             INodeOutput outCom;
 
             if (g_InComponents.TryGetValue(start, out inCom))
             {
-                inCom.OnLinkDestroyed();
+                inCom.LinkEventProc(ELinkEvent.Destroyed);
             }
             if (g_OutComponents.TryGetValue(start, out outCom))
             {
-                outCom.OnLinkDestroyed();
+                outCom.LinkEventProc(ELinkEvent.Destroyed);
             }
         }
 
-        public override void NotifyLinkHovered(int start)
+        public virtual void NotifyLinkHovered(int start)
         {
             INodeInput inCom;
             INodeOutput outCom;
 
             if (g_InComponents.TryGetValue(start, out inCom))
             {
-                inCom.OnLinkHovered();
+                inCom.LinkEventProc(ELinkEvent.Hovered);
             }
             if (g_OutComponents.TryGetValue(start, out outCom))
             {
-                outCom.OnLinkHovered();
+                outCom.LinkEventProc(ELinkEvent.Hovered);
             }
         }
 
@@ -221,7 +215,7 @@ namespace DotInsideNode
             g_InComponents.Remove(comID);
             g_OutComponents.Remove(comID);
 
-            component.OnComponentDestroyed();
+            component.NodeComEventProc(INodeComponent.EEvent.Detroyed);
         }
     }
 }

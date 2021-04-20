@@ -30,8 +30,6 @@ namespace DotInsideNode
 
         public override void DrawWindowContent()
         {
-
-
             if (ImGui.BeginTable("EditorTable", 3, TableFlags))
             {
                 ImGuiUtils.TableSetupHeaders();
@@ -39,6 +37,7 @@ namespace DotInsideNode
                 //Left
                 ImGui.TableSetColumnIndex(0);
                 DrawLeft();
+                DrawConsoleOutput();
 
                 //Middle
                 ImGui.TableSetColumnIndex(1);
@@ -48,12 +47,11 @@ namespace DotInsideNode
                 
                 //Right
                 ImGui.TableSetColumnIndex(2);
-                DrawRight();
-
+                DrawRight();                
                 ImGui.EndTable();
                 
             }
-            DrawEditorBottom();
+            
         }
 
         void DrawEditorTop()
@@ -78,7 +76,6 @@ namespace DotInsideNode
             }
         }
 
-        List<VarBase> varList = new List<VarBase>();
         void DrawLeft()
         {
             DrawFunctionList();
@@ -91,7 +88,7 @@ namespace DotInsideNode
             if (ImGui.Button("+##Function Create"))
             {
                 //m_NodeEditor.CreateMethod();
-                m_FunctionManager.AddFunction(new FunctionBase());
+                m_FunctionManager.AddFunction(new Function());
                 Console.WriteLine("IFunction Create");
             }
             ImGui.SameLine();
@@ -123,9 +120,12 @@ namespace DotInsideNode
         }
 
         string compileText = "";
-        void DrawEditorBottom()
+        void DrawConsoleOutput()
         {
-            ImGui.InputTextMultiline("", ref compileText, 10000, new Vector2(ImGui.GetColumnWidth(), ImGui.GetTextLineHeight() * 16));
+            if (ImGui.CollapsingHeader("Console Output"))
+            {
+                ImGui.InputTextMultiline("", ref compileText, 10000, new Vector2(ImGui.GetColumnWidth(), ImGui.GetTextLineHeight() * 16));
+            }
         }
     }
 }

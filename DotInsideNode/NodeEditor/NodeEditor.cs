@@ -62,7 +62,9 @@ namespace DotInsideNode
         protected override void DoEnd()
         {
             OnRightMenu();
-            OnVarDragDrop();
+            //OnVarDragDrop();
+            //OnFunctionDragDrop();
+            OnDragDrop();
         }
 
         void OnRightMenu()
@@ -76,33 +78,55 @@ namespace DotInsideNode
             m_PopupSelectList.DrawTypeDict();
         }
 
-        unsafe void OnVarDragDrop()
+        unsafe void OnDragDrop()
         {
-            if(ImGui.BeginDragDropTarget())
+            if (ImGui.BeginDragDropTarget())
             {
                 ImGuiPayloadPtr pPayload = ImGui.AcceptDragDropPayload("VAR_DRAG");
                 if (pPayload.NativePtr != null)
                 {
-                    int varID = *(int*)pPayload.Data;
-                    m_PopupVarGetSet.Show(varID, OnSelectVarGetSet);
-                    Logger.Info("Var Drop. ID:" + varID);
+                    OnVarDragDrop(pPayload);
+                }
+                pPayload = ImGui.AcceptDragDropPayload("FUNCTION_DRAG");
+                if (pPayload.NativePtr != null)
+                {
+                    OnFunctionDragDrop(pPayload);
                 }
             }
-
             m_PopupVarGetSet.Draw();
         }
 
-        void OnSelectVarGetSet(VarBase variable, PopupVarGetSet.MenuType select_type)
+        unsafe void OnVarDragDrop(ImGuiPayloadPtr pPayload)
+        {
+            int varID = *(int*)pPayload.Data;
+            m_PopupVarGetSet.Show(varID, OnSelectVarGetSet);
+            Logger.Info("Var Drop. ID:" + varID);
+        }
+
+        unsafe void OnFunctionDragDrop(ImGuiPayloadPtr pPayload)
+        {
+            int fucntionID = *(int*)pPayload.Data;
+            CreateFunctionCallNode(fucntionID);
+        }
+
+        void CreateFunctionCallNode(int functionID)
+        {
+            IFunction function = FunctionManager.Instance.GetFunctionByID(functionID);
+            Assert.IsNotNull(function);
+            AddNode(function.GetNewFunctionCall());
+        }
+
+        void OnSelectVarGetSet(IVar variable, PopupVarGetSet.MenuType select_type)
         {
             Logger.Info("Var Menu Select:" + select_type);
 
             switch(select_type)
             {
                 case PopupVarGetSet.MenuType.Get:
-                    AddNode(variable.NewGetter());
+                    AddNode(variable.GetNewGetter());
                     break;
                 case PopupVarGetSet.MenuType.Set:
-                    AddNode(variable.NewSetter());
+                    AddNode(variable.GetNewSetter());
                     break;
             }
         }

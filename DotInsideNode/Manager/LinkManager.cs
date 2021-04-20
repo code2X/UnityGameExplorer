@@ -4,27 +4,20 @@ using System.Collections.Generic;
 
 namespace DotInsideNode
 {
-    abstract class ILinkEventObserver
+    interface ILinkEventObserver
     {
-        public virtual void NotifyLinkCreated(int start,int end) { }
-        public virtual void NotifyLinkStarted(int start) { }
-        public virtual void NotifyLinkDropped(int start) { }
-        public virtual void NotifyLinkDestroyed(int start) { }
-        public virtual void NotifyLinkHovered(int start) { }
+        void NotifyLinkCreated(int start, int end);
+        void NotifyLinkStarted(int start);
+        void NotifyLinkDropped(int start);
+        void NotifyLinkDestroyed(int start);
+        void NotifyLinkHovered(int start);
     }
 
     [Serializable]
-    class LinkManager
+    class LinkManager: Singleton<LinkManager>
     {
         LinkPool m_LinkPool = new LinkPool();
         List<ILinkEventObserver> m_EventObservers = new List<ILinkEventObserver>();
-
-        static LinkManager __instance = new LinkManager();
-        public static LinkManager Instance
-        {
-            get => __instance;
-            set => __instance = value;
-        }
 
         public void Draw()
         {
@@ -142,6 +135,16 @@ namespace DotInsideNode
         public void AddLink(LinkPair linkPair)
         {
             m_LinkPool.AddLink(linkPair);
+        }
+
+        public bool IsConnect(LinkPair linkPair)
+        {
+            return m_LinkPool.IsConnect(linkPair);
+        }
+
+        public bool IsConnect(int start_attr, int end_attr)
+        {
+            return IsConnect(new LinkPair(start_attr, end_attr));
         }
 
         public void TryCreateLink(LinkPair linkPair)

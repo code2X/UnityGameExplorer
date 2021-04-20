@@ -1,80 +1,96 @@
-﻿using System;
+﻿using ImGuiNET;
+using System;
 using System.Collections.Generic;
 
 namespace DotInsideNode
 {
-    public class Singleton<T> where T : new()
-    {
-        static T __instance = new T();
-        public static T Instance
-        {
-            get => __instance;
-            set => __instance = value;
-        }
-    }
-
     [Serializable]
     public class VarManager: Singleton<VarManager>
-    { 
+    {
+        class ListMenuView : TEnumMenuView<IVar, ListMenuView.EItemEvent>
+        {
+            public enum EItemEvent
+            {
+                Delete,
+                Duplicate,
+            }
+        }
 
-        TManager<VarBase> m_Manager = new TManager<VarBase>();
-        VarListDrawer m_ListDrawer = null;
+        TManager<IVar> m_Manager = new TManager<IVar>();
+        VarListView m_ListDrawer = null;
+        ListMenuView m_ListMenuView = new ListMenuView();
 
         public VarManager()
         {
             m_Manager.NewObjectBaseName = "NewVar_";
 
             var name2obj = m_Manager.Name2Object;
-            m_ListDrawer = new VarListDrawer(ref name2obj);
+            m_ListDrawer = new VarListView(ref name2obj);
 
             InitManagerEvent();
             diType.InitClassList();
-            IContainer.InitClassList();
+            diContainer.InitClassList();
         }
 
         void InitManagerEvent()
         {
-            m_ListDrawer.OnDeleteClick += new VarListDrawer.TAction(OnDeleteClick);
-            m_ListDrawer.OnSelectClick += new VarListDrawer.TAction(OnSelectClick);
-            m_ListDrawer.OnDuplicateClick += new VarListDrawer.TAction(OnDuplicateClick);
+            //List Menu Event
+            m_ListMenuView.OnMenuEvent += new ListMenuView.TMenuAction(ListMenuItemEventProc);
+            m_ListDrawer.MenuDrawer = m_ListMenuView;
 
-            m_Manager.OnObjectDelete += new TManager<VarBase>.ObjectAction(OnVarDelete);
+            //List Event
+            m_ListDrawer.OnListItemEvent += new VarListView.TListAction(ListItemEventProc);
+
+            m_Manager.OnObjectEvent += new TManager<IVar>.ObjectAction(ManagerEventProc);
         }
 
         //List Event
-        void OnSelectClick(VarBase variable)
+        void ListItemEventProc(VarListView.EListItemEvent eEvent, IVar variable)
         {
-            m_Manager.m_SelectedTObj = variable;
-            PrintRightView.Instance.Submit(DrawVarInfo);
+            switch (eEvent)
+            {
+                case VarListView.EListItemEvent.SelectItem:
+                    m_Manager.m_SelectedTObj = variable;
+                    PrintRightView.Instance.Submit(DrawVarInfo);
+                    break;
+            }
         }
-
-        void OnDeleteClick(VarBase variable)
+        void ListMenuItemEventProc(ListMenuView.EMenuEvent eMenuEvent, ListMenuView.EItemEvent eItemEvent, IVar variable)
         {
-            TryDeleteVar(variable.Name);
-        }
-
-        void OnDuplicateClick(VarBase variable)
-        {
-            VarBase dup = variable.Duplicate();
-            AddVar(dup);
+            switch (eItemEvent)
+            {
+                case ListMenuView.EItemEvent.Delete:
+                    TryDeleteVar(variable.Name);
+                    break;
+                case ListMenuView.EItemEvent.Duplicate:
+                    IVar dup = (IVar)variable.Duplicate();
+                    AddVar(dup);
+                    break;
+            }
         }
 
         //Var Event
-        void OnVarDelete(VarBase @var)
+        void ManagerEventProc(TManager<IVar>.EObjectEvent eObjectEvent, IVar @var)
         {
-            @var.OnVarDelete();     //Notify var delete action
+            switch (eObjectEvent)
+            {
+                case TManager<IVar>.EObjectEvent.Delete:
+                    @var.OnVarDelete();     //Notify var delete action
+                    break;
+            }
         }
 
         public void AddVar() { AddVar(new Variable()); }
-        public void AddVar(VarBase variable) => m_Manager.AddObject(variable);
+        public void AddVar(IVar variable) => m_Manager.AddObject(variable);
         public bool ContainVar(int id) => m_Manager.ContainObject(id);
         public bool ContainVar(string name) => m_Manager.ContainObject(name);
         public bool SelectVar(int id) => m_Manager.SelectObject(id);
-        public VarBase GetVarByID(int id) => m_Manager.GetObjectByID(id);
-        public VarBase GetVarByName(string name) => m_Manager.GetObjectByName(name);
+        public IVar GetVarByID(int id) => m_Manager.GetObjectByID(id);
+        public IVar GetVarByName(string name) => m_Manager.GetObjectByName(name);
         public bool TryDeleteVar(string var_name) => m_Manager.TryDeleteObject(var_name);
         public bool TryDeleteVar(int var_id) => m_Manager.TryDeleteObject(var_id);
-        public bool TryReplaceVar(VarBase old_var, VarBase new_var) => m_Manager.TryReplaceObject(old_var, new_var);
+        public bool TryReplaceVar(IVar old_var, IVar new_var) => m_Manager.TryReplaceObject(old_var, new_var);
+        public bool TryRenameVar(int obj_id, string new_name) => m_Manager.TryRenameObject(obj_id,new_name);
 
         public void DrawVarList() => m_ListDrawer.DrawList();
         void DrawVarInfo() => m_Manager.m_SelectedTObj?.DrawEditor();

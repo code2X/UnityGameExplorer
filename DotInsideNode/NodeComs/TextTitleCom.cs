@@ -5,7 +5,7 @@ namespace DotInsideNode
 
     class TextTB : INodeTitleBar
     {
-        string m_Text;
+        string m_TitleText;
         string m_Tooltip = string.Empty;
         string m_TooltipDetails = string.Empty;
 
@@ -14,13 +14,13 @@ namespace DotInsideNode
             Title = text;
         }
 
-        public string Title
+        public virtual string Title
         {
-            get => m_Text;
-            set => m_Text = value;
+            get => m_TitleText;
+            set => m_TitleText = value;
         }
 
-        public string Tooltip
+        public virtual string Tooltip
         {
             get
             {
@@ -29,7 +29,7 @@ namespace DotInsideNode
             //set => m_Tooltip = value;
         }
 
-        public string TooltipDetails
+        public virtual string TooltipDetails
         {
             get => m_TooltipDetails;
             set => m_TooltipDetails = value;
@@ -42,7 +42,7 @@ namespace DotInsideNode
 
                 if (ImGui.IsKeyDown((int)Keys.LeftControl) && ImGui.IsKeyDown((int)Keys.LeftAlt))
                 {
-                    ImGui.SetTooltip(m_TooltipDetails);
+                    ImGui.SetTooltip(TooltipDetails);
                 }               
                 else
                 {
@@ -55,11 +55,12 @@ namespace DotInsideNode
 
         protected override void DrawContent()
         {
-            ImGui.TextUnformatted(m_Text);
+            ImGui.TextUnformatted(Title);
             DrawTooltip();
         }
     }
 
+    /*
     class TextOC : INodeOutput
     {
         string m_Text;
@@ -107,5 +108,5 @@ namespace DotInsideNode
             ImGui.TextUnformatted(m_Text);
         }
     }
-
+    */
 }

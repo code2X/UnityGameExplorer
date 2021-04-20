@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotInsideNode.LinkManager" Collapsed="true">
+    <Position X="3.75" Y="2.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>gCQgAAiAIAAAAgEYECgQgCAAAAAAQBAAQAAEAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\LinkManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_LinkPool" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="m_EventObservers" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DotInsideNode.Singleton&lt;T&gt;" Collapsed="true">
+    <Position X="9.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\Singleton.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.NodeComponentAttributeProcesser" Collapsed="true">
+    <Position X="8.75" Y="5.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAACAAgAAAAAAAAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\NodeComponentManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.NodeComponentManager" Collapsed="true">
+    <Position X="7.75" Y="2.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAEACwAAAAAACAAAABQAAAAABAAAAAAEBgBAAAggAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\NodeComponentManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_ComAttrProcesser" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="g_Components" />
+      <Field Name="g_InComponents" />
+      <Field Name="g_OutComponents" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotInsideNode.INodeComponent" Collapsed="true">
+    <Position X="10.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAQAAAAAAAAAAQAAAAAIAAAQAAAAAAQAAA=</HashCode>
+      <FileName>DotInsideNode\NodeComs\INodeComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.INodeInput" Collapsed="true">
+    <Position X="8.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAACCAAAAAQAAAAAAAAAAAAAACAAAAgwAAAAAAAAEA=</HashCode>
+      <FileName>DotInsideNode\NodeComs\INodeEvenComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.INodeOutput" Collapsed="true">
+    <Position X="6.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAACCAAAAAQAAAAAAgAAAAAAACAAAAAwAAAAAAAAEA=</HashCode>
+      <FileName>DotInsideNode\NodeComs\INodeEvenComponent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.LinkPool" Collapsed="true">
+    <Position X="4.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAgAAAAAQAAAgANAAAAAQAAAgAAQAAAAAAAAiAAAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\LinkPool.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="s_Links" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DotInsideNode.NodeManager" Collapsed="true">
+    <Position X="12.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAIAAAAAhAAAAAAAAQACAAAAAAAAAIAQCAIAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\NodeManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="m_Nodes" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DotInsideNode.INode" Collapsed="true">
+    <Position X="12.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAQAAgAAAAAAAAAiAAAjAAAABAAAEA=</HashCode>
+      <FileName>DotInsideNode\Nodes\INode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.VarManager" Collapsed="true">
+    <Position X="14.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IIQACAAAQAAAQAAAAAAAoQAAAAAAAAAAAAYAAQMQAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\VarManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_Manager" />
+      <Field Name="m_ListDrawer" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DotInsideNode.VarListDrawer" Collapsed="true">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAACAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Views\ListDrawer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.TManager&lt;T&gt;" Collapsed="true">
+    <Position X="16.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQACAAAAAAgAAwAAQQQAABAQAAAAoCAAAAAApAAQ=</HashCode>
+      <FileName>DotInsideNode\Manager\TManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.FunctionManager" Collapsed="true">
+    <Position X="21" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AaQACAAQAAAAABgAAAIAIQIIAQAAAAACAAAAAQMQABA=</HashCode>
+      <FileName>DotInsideNode\Manager\FunctionManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_Manager" />
+      <Field Name="m_ListDrawer" />
+      <Field Name="m_TabBarView" />
+      <Field Name="m_NodeEditor" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DotInsideNode.FunctionListDrawer" Collapsed="true">
+    <Position X="19.5" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAACAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Views\ListDrawer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.NodeEditor" Collapsed="true">
+    <Position X="24.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAIAAAIAAAAAAIADAABAAgABAAAEAAAkBJAAAAABNA=</HashCode>
+      <FileName>DotInsideNode\NodeEditor\NodeEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.TabBarView" Collapsed="true">
+    <Position X="24.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAgACAI4AAAAAAAIACAAAAAYAABElAAA=</HashCode>
+      <FileName>DotInsideNode\Views\TabBarView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.TListDrawer&lt;T&gt;" Collapsed="true">
+    <Position X="16.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAQAABAgAEAKIDAAAACAAAQAAAAAAAAAECAA=</HashCode>
+      <FileName>DotInsideNode\Views\TListDrawer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="DotInsideNode.LinkPair" Collapsed="true">
+    <Position X="4" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\LinkPool.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="DotInsideNode.ILinkEventObserver" Collapsed="true">
+    <Position X="6" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAwAAAAAAAAAAABAAAAAABAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Manager\LinkManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotInsideNode.TType&lt;T&gt;" Collapsed="true">
+    <Position X="8.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.BoolType" Collapsed="true">
+    <Position X="7.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.IntType" Collapsed="true">
+    <Position X="12" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.FloatType" Collapsed="true">
+    <Position X="3" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.DoubleType" Collapsed="true">
+    <Position X="9.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.StringType" Collapsed="true">
+    <Position X="14.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.Vector3Type" Collapsed="true">
+    <Position X="5.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>DotInsideNode\Type\Type.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.diType" Collapsed="true">
+    <Position X="8.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAQAAAACgAEAA=</HashCode>
+      <FileName>DotInsideNode\Base\diType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

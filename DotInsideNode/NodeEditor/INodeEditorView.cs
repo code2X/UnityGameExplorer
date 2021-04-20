@@ -7,7 +7,7 @@ namespace DotInsideNode
 {
     abstract class INodeEditorView : IWindowView
     {
-        bool m_Open = false;
+        bool m_Open = true;
 
         public override void DrawWindowContent()
         {

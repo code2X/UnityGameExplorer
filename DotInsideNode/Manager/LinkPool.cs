@@ -119,7 +119,24 @@ namespace DotInsideNode
             return s_Links.TryGetValue(id, out link);
         }
 
+        public bool IsConnect(LinkPair queryLink)
+        {
+            List<int> linkIDs = new List<int>();
 
+            if(TryGetLinkIDByStart(queryLink.start,out linkIDs))
+            {
+                foreach(int id in linkIDs)
+                {
+                    LinkPair linkPair;
+                    if(TryGetLink(id,out linkPair) && linkPair.end == queryLink.end)
+                    {
+                        return true;
+                    }
+                }              
+            }
+
+            return false;
+        }
     }
 
 }

@@ -22,9 +22,14 @@ namespace DotInsideNode
             //ImGui.TextUnformatted(m_Type.Name);
         }
 
-        public override void OnLinkDropped() 
+        public override void LinkEventProc(ELinkEvent eEvent)
         {
-            PopupSelectList.GetInstance().Show(MethodTools.GetMethodList(m_Type), OnListSelected);
+            switch (eEvent)
+            {
+                case ELinkEvent.Dropped:
+                    PopupSelectList.GetInstance().Show(MethodTools.GetMethodList(m_Type), OnListSelected);
+                    break;
+            }
         }
 
         public override void DoComponentEnd()
@@ -62,17 +67,17 @@ namespace DotInsideNode
             }
 
             MethodNode endNode = new MethodNode(methodInfo);
-            NodeManager.Instance.AddNode(endNode);
-            LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
+            //NodeManager.Instance.AddNode(endNode);
+            //LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return m_Type;
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return null;
             }
             throw new RequestTypeError(type);

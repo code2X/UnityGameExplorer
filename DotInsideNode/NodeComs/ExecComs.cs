@@ -64,16 +64,21 @@ namespace DotInsideNode
             return null;
         }
 
-        public override void OnLinkDestroyed()
+        public override void LinkEventProc(ELinkEvent eEvent)
         {
-            Logger.Info("ExecIC Link Destroyed");
-            m_ConnectBy = new NullOC();
-        }
-
-        public override void OnLinkStart()
-        {
-          
-            Logger.Info("ExecIC Link Started");
+            switch (eEvent)
+            {
+                case ELinkEvent.Started:
+                    Logger.Info("ExecIC Link Started");
+                    break;
+                case ELinkEvent.Dropped:
+                    Logger.Info("ExecIC Link Dropped");
+                    break;
+                case ELinkEvent.Destroyed:
+                    Logger.Info("ExecIC Link Destroyed");
+                    m_ConnectBy = new NullOC();
+                    break;
+            }
         }
 
         protected override PinShape GetPinShape() => m_ConnectBy is NullOC ? PinShape.Triangle : PinShape.TriangleFilled;
@@ -137,20 +142,21 @@ namespace DotInsideNode
             return res;
         }
 
-        public override void OnLinkDestroyed()
+        public override void LinkEventProc(ELinkEvent eEvent)
         {
-            Console.WriteLine("ExecOC Link Destroyed");
-            m_ConnectTo = new NullIC();
-        }
-
-        public override void OnLinkStart() 
-        {
-            Logger.Info("ExecOC Link Started");
-        }
-
-        public override void OnLinkDropped()
-        {           
-            Logger.Info("ExecOC Link Dropped");
+            switch(eEvent)
+            {
+                case ELinkEvent.Started:
+                    Logger.Info("ExecOC Link Started");
+                    break;
+                case ELinkEvent.Dropped:
+                    Logger.Info("ExecOC Link Dropped");
+                    break;
+                case ELinkEvent.Destroyed:
+                    Logger.Info("ExecOC Link Destroyed");
+                    m_ConnectTo = new NullIC();
+                    break;
+            }
         }
 
         protected override PinShape GetPinShape() => m_ConnectTo is NullIC ? PinShape.Triangle:PinShape.TriangleFilled;

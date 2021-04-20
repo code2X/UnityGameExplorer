@@ -2,15 +2,9 @@
 
 namespace DotInsideNode
 {
-    class PrintRightView
+    class PrintRightView: Singleton<PrintRightView>
     {
-        static PrintRightView __instance = new PrintRightView();
         Action m_Drawer;
-
-        public static PrintRightView Instance
-        {
-            get => __instance;
-        }
 
         public void Draw()
         {

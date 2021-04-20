@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotInsideNode.NodeEditor" Collapsed="true">
+    <Position X="3.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAIAAAIAAAAAAIADAABAAgAAAAAEAAAgBIAAAAABNA=</HashCode>
+      <FileName>DotInsideNode\NodeEditor\NodeEditor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="m_EntryNode" />
+      <Field Name="m_PopupSelectList" />
+      <Field Name="m_PopupVarGetSet" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DotInsideNode.INodeEditorView" Collapsed="true">
+    <Position X="3.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAIAAAAAAAAABAAgAAAAAAACAAAACCQAA=</HashCode>
+      <FileName>DotInsideNode\NodeEditor\INodeEditorView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.NodeEditorBase" Collapsed="true">
+    <Position X="3.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAIAAAAAAAAAAEAAAAAAgAAAAAAAAAAAAAKQAA=</HashCode>
+      <FileName>DotInsideNode\NodeEditor\INodeEditorView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.MethodEntryNode" Collapsed="true">
+    <Position X="7.25" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAEAAAAAAAAAACgAAEAAAAAAAAAAAAAAgAAIAEA=</HashCode>
+      <FileName>DotInsideNode\Nodes\MethodEntryNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.PopupSelectList" Collapsed="true">
+    <Position X="7.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAQAABgAAAAAAQFAABABEAAAAAAAEAIACAAA=</HashCode>
+      <FileName>DotInsideNode\Views\PopupSelectList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotInsideNode.PopupVarGetSet" Collapsed="true">
+    <Position X="7.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACBAAAAQAABgAAAAAAQEAAAAAEAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>DotInsideNode\Views\PopupVarGetSet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>

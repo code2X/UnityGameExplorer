@@ -6,15 +6,8 @@ using ImGuiNET;
 namespace DotInsideNode
 {
     [Serializable]
-    class NodeManager
+    class NodeManager: Singleton<NodeManager>
     {
-        static NodeManager __instance = new NodeManager();
-        public static NodeManager Instance
-        {
-            get => __instance;
-            set => __instance = value;
-        }
-
         static Random s_Rand = new Random();
         Dictionary<int, INode> m_Nodes = new Dictionary<int, INode>();
 
@@ -28,6 +21,17 @@ namespace DotInsideNode
 
             if(mousePos)
                 imnodes.SetNodeScreenSpacePos(id, ImGuiNET.ImGui.GetMousePos());
+        }
+
+        public Vector2 GetNodeEditorPostion(INode node)
+        {
+            return imnodes.GetNodeEditorSpacePos(node.ID);
+        }
+
+        public bool SetNodeEditorPostion(INode node, Vector2 Position)
+        {
+            imnodes.SetNodeEditorSpacePos(node.ID, Position);
+            return true;
         }
 
         public Dictionary<int, Vector2> NodeEditorPostions
@@ -73,7 +77,11 @@ namespace DotInsideNode
             int nodeID = -1;
             if(imnodes.IsNodeHovered(ref nodeID))
             {
-                NotifyNodeHovered(nodeID);
+                NotifyEventAction(nodeID, INode.EEvent.Hovered);
+                if(ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                {
+                    NotifyEventAction(nodeID, INode.EEvent.Clicked);
+                }
             }
         }
 
@@ -100,26 +108,17 @@ namespace DotInsideNode
             {
                 for (int i = 0; i < selectNum; ++i)
                 {
-                    NotifyNodeSelected(nodeIDs[i]);
+                    NotifyEventAction(nodeIDs[i], INode.EEvent.Selected);
                 }
             }
         }
 
-        void NotifyNodeHovered(int nodeID)
+        void NotifyEventAction(int nodeID, INode.EEvent eEvent)
         {
             INode node;
             if (m_Nodes.TryGetValue(nodeID, out node))
             {
-                node.OnNodeHovered();
-            }
-        }
-
-        void NotifyNodeSelected(int nodeID)
-        {
-            INode node;
-            if (m_Nodes.TryGetValue(nodeID, out node))
-            {
-                node.OnNodeSelected();
+                node.EventProc(eEvent);
             }
         }
 
@@ -128,10 +127,10 @@ namespace DotInsideNode
             INode node;
             if (m_Nodes.TryGetValue(nodeID, out node))
             {
-                if (node is MethodEntryNode)
+                if (node.Removable == false)
                     return false;
 
-                node.OnNodeDetroyed();
+                node.EventProc(INode.EEvent.Detroyed);
                 m_Nodes.Remove(nodeID);
                 return true;
             }

@@ -72,7 +72,7 @@ namespace DotInsideNode
                 else
                 {
                     Assert.IsNotNull(ParentNode);
-                    return ParentNode.Request(RequestType.InstanceObject);
+                    return ParentNode.Request(ERequest.InstanceObject);
                 }
             }
             set => m_Object.Object = value;
@@ -108,10 +108,18 @@ namespace DotInsideNode
             return true;
         }
 
-        public override void OnLinkDropped()
+        public override void LinkEventProc(ELinkEvent eEvent)
         {
-            if(m_Object.Type != null)
-                PopupSelectList.GetInstance().Show(MethodTools.GetMethodList(m_Object.Type), OnListSelected);
+            switch (eEvent)
+            {
+                case ELinkEvent.Started:
+                    Logger.Info("ObjectOC Link Started");
+                    break;
+                case ELinkEvent.Dropped:
+                    if (m_Object.Type != null)
+                        PopupSelectList.GetInstance().Show(MethodTools.GetMethodList(m_Object.Type), OnListSelected);
+                    break;
+            }
         }
 
         void OnListSelected(string selected, int index)
@@ -120,18 +128,18 @@ namespace DotInsideNode
             MethodInfo methodInfo = MethodTools.GetAllMethod(m_Object.Type)[index];
             if (methodInfo == null) return;
 
-            MethodNode endNode = new MethodNode(methodInfo);
-            NodeManager.Instance.AddNode(endNode);
-            LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
+            //MethodNode endNode = new MethodNode(methodInfo);
+            //NodeManager.Instance.AddNode(endNode);
+            //LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
         }
 
-        public override object Request(RequestType type) 
+        public override object Request(ERequest type) 
         { 
             switch(type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return ObjectType;
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return Object;
             }
             throw new RequestTypeError(type);

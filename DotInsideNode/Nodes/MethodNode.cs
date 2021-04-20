@@ -72,7 +72,7 @@ namespace DotInsideNode
             return m_ExecOC.Play();
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             if (m_Method == null)
                 return null;

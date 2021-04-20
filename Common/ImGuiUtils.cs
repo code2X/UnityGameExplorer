@@ -63,10 +63,20 @@ namespace ImGuiNET
             }
         }
 
-        public static void TableView(string name, Action callback, ImGuiTableFlags flags, params string[] headers)
+        public static void TableColumns(params Action[] callbacks)
+        {
+            int len = callbacks.Length;
+            for(int i=0; i < len; ++i)
+            {
+                ImGui.TableNextColumn();
+                callbacks[i]?.Invoke();
+            }
+        }
+
+        public static void TableView(string str_id, Action callback, ImGuiTableFlags flags, params string[] headers)
         {
             int len = headers.Length;
-            if (ImGui.BeginTable(name, len, flags))
+            if (ImGui.BeginTable(str_id, len, flags))
             {
                 ImGuiUtils.TableSetupHeaders(headers);
 
@@ -75,13 +85,21 @@ namespace ImGuiNET
             }
         }
 
-        public static void TableColumns(params Action[] callbacks)
+        public static void ComboView(string str_id, Action callback,string preview_value)
         {
-            int len = callbacks.Length;
-            for(int i=0; i < len; ++i)
+            if (ImGui.BeginCombo(str_id, preview_value))
             {
-                ImGui.TableNextColumn();
-                callbacks[i]?.Invoke();
+                callback?.Invoke();
+                ImGui.EndCombo();
+            }
+        }
+
+        public static void ComboView(string str_id, Action callback, string preview_value, ImGuiComboFlags flags)
+        {
+            if (ImGui.BeginCombo(str_id, preview_value, flags))
+            {
+                callback?.Invoke();
+                ImGui.EndCombo();
             }
         }
     }

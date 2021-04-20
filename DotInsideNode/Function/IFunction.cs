@@ -1,10 +1,9 @@
 ﻿using ImGuiNET;
-using System;
 using System.Collections.Generic;
 
 namespace DotInsideNode
 {
-    class IFunction : diObject
+    abstract class IFunction : diObject, IEditor
     {
         public enum EAccessSpecifier
         {
@@ -13,11 +12,7 @@ namespace DotInsideNode
             Protected
         }
 
-        public struct Variable
-        {
-
-        }
-
+        //Base Field
         protected string m_Description = string.Empty;
         protected string m_Keywords = string.Empty;
         protected string m_CompactNodeTitle = string.Empty;
@@ -25,112 +20,118 @@ namespace DotInsideNode
         protected bool m_Pure = false;
         protected bool m_CallInEditor = false;
 
-        protected string m_EditName = string.Empty;
+        public IFunction()
+        { }
 
-        public override string Name
+        public string Description => m_Description;
+
+        //Param Interface
+        public abstract ParamManager InputParams
         {
-            get => m_Name;
-            set
+            get;
+        }
+
+        public abstract ParamManager OutputParams
+        {
+            get;
+        }
+
+        //Node Interface       
+        protected abstract List<ComNodeBase> EntryNodes
+        {
+            get;
+        }
+        protected abstract List<ComNodeBase> ReturnNodes
+        {
+            get;
+        }
+        protected abstract List<ComNodeBase> CallNodes
+        {
+            get;
+        }
+        public abstract int EntryNodeCount
+        {
+            get;
+        }
+        public abstract int ReturnNodeCount
+        {
+            get;
+        }
+        public abstract int CallNodeCount
+        {
+            get;
+        }
+
+        //Function Node Interface
+        public abstract ComNodeBase GetNewFunctionEntry();
+        public abstract ComNodeBase GetNewFunctionReturn();
+        public abstract ComNodeBase GetNewFunctionCall();
+
+        //Overridable Interface
+        public virtual void DrawEditor() {}
+        public virtual void Execute() { }
+
+        public virtual void OpenGraph() { }
+        public virtual void CloseGraph() { }
+
+        protected abstract class IFunctionEditor : IEditor
+        {
+            public abstract void DrawEditor();
+        }
+
+        protected class FunctionDefaultEditor : IFunctionEditor
+        {
+            protected string m_EditName = string.Empty;
+            protected IFunction m_Function = null;
+
+            public FunctionDefaultEditor(IFunction function)
             {
-                m_Name = value;
-                m_EditName = m_Name;
+                m_Function = function;
+                m_EditName = m_Function.Name;
+
+                m_Function.OnSetName += new NameEvent(SetNameProc);
             }
-        }
 
-        public string Description
-        {
-            get => m_Description;
-        }
-    }
-
-    class FunctionBase: IFunction
-    {
-        LinkManager m_LinkManager;
-        NodeManager m_NodeManager;
-        VarManager m_LocalVarManager;
-        NodeComponentManager m_NodeComponentManager;
-        Dictionary<int, Vector2> m_NodePositions = null;
-
-        public FunctionBase()
-        {
-            m_LinkManager = new LinkManager();
-            m_NodeManager = new NodeManager();
-            m_LocalVarManager = new VarManager();
-            m_NodeComponentManager = new NodeComponentManager(m_LinkManager);
-        }
-
-        public void OpenGraph()
-        {
-            LinkManager.Instance = m_LinkManager;
-            NodeComponentManager.Instance = m_NodeComponentManager;
-            NodeManager.Instance = m_NodeManager;
-
-            if(m_NodePositions != null)
-                m_NodeManager.NodeEditorPostions = m_NodePositions;
-        }
-
-        public void CloseGraph()
-        {
-            m_NodePositions = m_NodeManager.NodeEditorPostions;
-        }
-
-        public void OnFunctionDelete()
-        {
-
-        }
-
-        protected virtual void DrawBaseEditor()
-        {
-            ImGui.InputText("Name", ref m_EditName, 30);
-            ImGui.InputText("Description", ref m_Description, 30);
-            ImGui.InputText("Keywords", ref m_Keywords, 30);
-            ImGui.InputText("Compact Node Title", ref m_CompactNodeTitle, 30);
-            DrawAccessSpecifier();
-            ImGui.Checkbox("Pure", ref m_Pure);
-            ImGui.Checkbox("Call In Editor", ref m_CallInEditor);
-        }
-        public void DrawAccessSpecifier()
-        {
-            if (ImGui.BeginCombo("Access Specifier", m_eAccessSpecifier.ToString()))
+            void SetNameProc(string newName)
             {
-                foreach (EAccessSpecifier type in Enum.GetValues(typeof(EAccessSpecifier)))
+                m_EditName = newName;
+            }
+
+            protected virtual void DrawBaseEditor()
+            {
+                ImGui.InputText("Name", ref m_EditName, 30);
+                ImGui.InputText("Description", ref m_Function.m_Description, 30);
+                ImGui.InputText("Keywords", ref m_Function.m_Keywords, 30);
+                ImGui.InputText("Compact Node Title", ref m_Function.m_CompactNodeTitle, 30);
+                DrawAccessSpecifier();
+                ImGui.Checkbox("Pure", ref m_Function.m_Pure);
+                ImGui.Checkbox("Call In Editor", ref m_Function.m_CallInEditor);
+            }
+            public void DrawAccessSpecifier()
+            {
+                if (ImGui.BeginCombo("Access Specifier", m_Function.m_eAccessSpecifier.ToString()))
                 {
-                    if (ImGui.Selectable(type.ToString()))
+                    foreach (EAccessSpecifier type in System.Enum.GetValues(typeof(EAccessSpecifier)))
                     {
-                        m_eAccessSpecifier = type;
+                        if (ImGui.Selectable(type.ToString()))
+                        {
+                            m_Function.m_eAccessSpecifier = type;
+                        }
                     }
+
+                    ImGui.EndCombo();
                 }
+            }
 
-                ImGui.EndCombo();
+            public override void DrawEditor()
+            {
+                if (ImGui.CollapsingHeader("Graph", ImGuiTreeNodeFlags.DefaultOpen))
+                {
+                    DrawBaseEditor();
+                }
             }
         }
 
-        public virtual void DrawEditor() 
-        {
-            if (ImGui.CollapsingHeader("Graph", ImGuiTreeNodeFlags.DefaultOpen))
-            {
-                DrawBaseEditor();
-            }
-
-            //Function
-            if (ImGui.Button("+##Input Create"))
-            {
-                Console.WriteLine("Input Create");
-            }
-            ImGui.SameLine();
-            if (ImGui.CollapsingHeader("Input", ImGuiTreeNodeFlags.DefaultOpen))
-            {
-            }
-
-            //Variables
-            if (ImGui.Button("+##Outputs Create"))
-            {
-                Console.WriteLine("Outputs Create");
-            }
-            ImGui.SameLine();
-            if (ImGui.CollapsingHeader("Outputs", ImGuiTreeNodeFlags.DefaultOpen))
-            {
-            }
-        }
     }
+
 }

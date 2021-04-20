@@ -58,13 +58,13 @@ namespace DotInsideNode
             return DoBoolOperation(objectList);
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(object);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return DoBoolOperation();
             }
             throw new RequestTypeError(type);
@@ -135,13 +135,13 @@ namespace DotInsideNode
             Style.AddStyle(StyleManager.StyleType.Pin, m_PinColor);
         }
 
-        public override object Request(RequestType type)
+        public override object Request(ERequest type)
         {
             switch (type)
             {
-                case RequestType.InstanceType:
+                case ERequest.InstanceType:
                     return typeof(object);
-                case RequestType.InstanceObject:
+                case ERequest.InstanceObject:
                     return !(bool)m_ObjectIC_Left.Object;
             }
             throw new RequestTypeError(type);
