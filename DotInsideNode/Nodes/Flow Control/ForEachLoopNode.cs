@@ -12,7 +12,7 @@ namespace DotInsideNode
         ObjectOC m_ArrayElement = new ObjectOC();
         ObjectOC m_ArrayIndex = new ObjectOC();
 
-        public ForEachLoopNode()
+        public ForEachLoopNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "For Each Loop";
             m_ExecIC.Text = "".PadRight(12);
@@ -62,7 +62,7 @@ namespace DotInsideNode
         ObjectOC m_Index = new ObjectOC();
         IntIC m_LastIndex = new IntIC();
 
-        public ForLoopWithBreakNode()
+        public ForLoopWithBreakNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "For Loop with Break";
             m_ExecOC_LoopBody.Text = "Loop Body".PadLeft(35);

@@ -30,6 +30,7 @@ namespace DotInsideNode
             InitManagerEvent();
             diType.InitClassList();
             diContainer.InitClassList();
+            ConnectValueType.InitClassList();
         }
 
         void InitManagerEvent()

@@ -1,9 +1,5 @@
 ﻿using ImGuiNET;
 using imnodesNET;
-using System;
-using System.Collections.Generic;
-using DotInsideLib;
-using System.Reflection;
 
 namespace DotInsideNode
 {
@@ -11,8 +7,13 @@ namespace DotInsideNode
     public class ExecIC : INodeInput
     {
         INodeOutput m_ConnectBy = new NullOC();
-        string m_Text = "Exec";
+        string m_Text = "";
         bool m_IsRuntime = false;
+
+        public ExecIC()
+        {
+            Style.Normal = uColor.White;
+        }
 
         public INodeOutput GetConnect() => m_ConnectBy;
         public INode ConnectNode
@@ -43,7 +44,6 @@ namespace DotInsideNode
         public override bool TryConnectBy(INodeOutput component) 
         {
             m_ConnectBy = component;
-            Logger.Info("ExecIC ConnectBy");
             return true; 
         }
 
@@ -68,17 +68,12 @@ namespace DotInsideNode
         {
             switch (eEvent)
             {
-                case ELinkEvent.Started:
-                    Logger.Info("ExecIC Link Started");
-                    break;
-                case ELinkEvent.Dropped:
-                    Logger.Info("ExecIC Link Dropped");
-                    break;
                 case ELinkEvent.Destroyed:
-                    Logger.Info("ExecIC Link Destroyed");
                     m_ConnectBy = new NullOC();
                     break;
             }
+
+            DefLinkEventProc(eEvent);
         }
 
         protected override PinShape GetPinShape() => m_ConnectBy is NullOC ? PinShape.Triangle : PinShape.TriangleFilled;
@@ -89,8 +84,13 @@ namespace DotInsideNode
     public class ExecOC : INodeOutput
     {
         INodeInput m_ConnectTo = new NullIC();
-        string m_Text = "Exec";
+        string m_Text = "";
         bool m_IsRuntime = false;
+
+        public ExecOC()
+        {
+            Style.Normal = uColor.White;
+        }
 
         INodeInput ConnectCom
         {
@@ -121,7 +121,6 @@ namespace DotInsideNode
         public override bool TryConnectTo(INodeInput component) 
         {
             m_ConnectTo = component;
-            Logger.Info("ExecOC ConnectTo");
             return true; 
         }
 
@@ -146,17 +145,12 @@ namespace DotInsideNode
         {
             switch(eEvent)
             {
-                case ELinkEvent.Started:
-                    Logger.Info("ExecOC Link Started");
-                    break;
-                case ELinkEvent.Dropped:
-                    Logger.Info("ExecOC Link Dropped");
-                    break;
                 case ELinkEvent.Destroyed:
-                    Logger.Info("ExecOC Link Destroyed");
                     m_ConnectTo = new NullIC();
                     break;
             }
+
+            DefLinkEventProc(eEvent);
         }
 
         protected override PinShape GetPinShape() => m_ConnectTo is NullIC ? PinShape.Triangle:PinShape.TriangleFilled;

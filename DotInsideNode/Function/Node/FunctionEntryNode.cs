@@ -13,7 +13,7 @@ namespace DotInsideNode
         public override bool Removable => false;
         List<ParamOC> m_OutputParams = new List<ParamOC>();
 
-        public FunctionEntryNode(IFunction function)
+        public FunctionEntryNode(INodeGraph ng, IFunction function) : base(ng)
         {           
             m_Function = function;
             m_ExecOC.Text = "";
@@ -34,9 +34,30 @@ namespace DotInsideNode
             AddComponet(paramOC);
         }
 
-        protected override object ExecNode(int callerID, params object[] objects)
+        protected override object ExecNode(int callerID, params object[] inParams)
         {
-            return m_ExecOC.Play(callerID, objects);
+            //Fill input params into out component
+            if(inParams != null)
+            {
+                Assert.IsTrue(inParams.Length <= m_OutputParams.Count);
+                for (int i = 0; i < inParams.Length; ++i)
+                {
+                    m_OutputParams[i].Object = inParams[i];
+                }
+            }
+
+            object res = m_ExecOC.Play(callerID, null);
+
+            ClearExecLocalState();
+            return res;
+        }
+
+        public void ClearExecLocalState()
+        {
+            foreach(ParamOC param in m_OutputParams)
+            {
+                param.Object = null;
+            }
         }
     }
 }

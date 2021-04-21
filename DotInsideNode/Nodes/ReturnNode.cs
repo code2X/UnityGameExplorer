@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace DotInsideNode
 {
+    /*
     [EditorNode("Return")]
     class ReturnNode : ComNodeBase
     {
@@ -14,7 +15,7 @@ namespace DotInsideNode
         public override INodeTitleBar GetTitleBarCom() => m_TextTitleBar;
         public override ExecIC GetExecInCom() => m_ExecIC;
 
-        public ReturnNode()
+        public ReturnNode(IBluePrint bp) : base(bp)
         {
             AddComponet(m_TextTitleBar);
             AddComponet(m_ExecIC);
@@ -34,5 +35,5 @@ namespace DotInsideNode
             return null;
         }
     }
-
+    */
 }

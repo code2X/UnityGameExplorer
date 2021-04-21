@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DotInsideNode.IVar">
-    <Position X="10.5" Y="4.25" Width="2.75" />
+    <Position X="10.5" Y="3.75" Width="2.75" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
@@ -35,6 +34,7 @@
     <Position X="10.5" Y="9.5" Width="2.75" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
       <HashCode>AAQRBBAAAAAAAAAAACAAQAAEAAIAIAQBAAAIAAEIAEA=</HashCode>
@@ -52,7 +52,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DotInsideNode.diObject" Collapsed="true">
-    <Position X="11.25" Y="2.25" Width="1.5" />
+    <Position X="10.5" Y="2.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAAAAgAAAAAAAAAQAAAAAAQAAAAAEAAAAAAA=</HashCode>
       <FileName>DotInsideNode\Base\diObject.cs</FileName>
@@ -96,14 +96,14 @@
   <Class Name="DotInsideNode.INodeOutput" Collapsed="true">
     <Position X="17" Y="12.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAACCAAAAAQAAAAAAgAAAAAAACAAAAAwAAAAAAAAEA=</HashCode>
+      <HashCode>QAAACCAAAAAQAAAAAAgAAAAAAACAAAAAzAAAAAAAAEA=</HashCode>
       <FileName>DotInsideNode\NodeComs\INodeEvenComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DotInsideNode.INodeInput" Collapsed="true">
     <Position X="14.75" Y="12.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAACCAAAAAQAAAAAAAAAAAAAACAAAAgwAAAAAAAAEA=</HashCode>
+      <HashCode>QAAACCAAAAAQAAAAAAAAAAAAAACAAAAgxAEAAAAAAEA=</HashCode>
       <FileName>DotInsideNode\NodeComs\INodeEvenComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -123,7 +123,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="DotInsideNode.IEditor" Collapsed="true">
-    <Position X="7.25" Y="5.75" Width="1.5" />
+    <Position X="8.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>DotInsideNode\Var\IVar.cs</FileName>

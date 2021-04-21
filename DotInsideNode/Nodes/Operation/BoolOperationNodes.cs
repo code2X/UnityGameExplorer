@@ -15,7 +15,7 @@ namespace DotInsideNode
         List<BoolIC> m_BoolIC_List = new List<BoolIC>();
         protected BoolOC m_ObjectOC = new BoolOC();
 
-        public BoolOperationNode()
+        public BoolOperationNode(INodeGraph bp) : base(bp)
         {
             m_ObjectOC.Text = "Result".PadLeft(9);
 
@@ -78,7 +78,7 @@ namespace DotInsideNode
     {
         public const string  m_Name = "AND";
 
-        public ANDNode()
+        public ANDNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = m_Name;
             AddBaseComponet();
@@ -99,7 +99,7 @@ namespace DotInsideNode
     [EditorNode("OR")]
     class ORNode : BoolOperationNode
     {
-        public ORNode()
+        public ORNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "OR";
             AddBaseComponet();
@@ -122,7 +122,7 @@ namespace DotInsideNode
     {
         protected static uint m_PinColor = StyleManager.GetU32Color(255, 0, 0);
 
-        public NOTNode()
+        public NOTNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "NOT";
             m_ObjectIC_Left.Text = "In";

@@ -12,7 +12,7 @@ namespace DotInsideNode
         protected TextTB m_TextTitleBar = new TextTB("");
         protected ExecIC m_ExecIC = new ExecIC();
 
-        public FlowControlNode()
+        public FlowControlNode(INodeGraph bp) : base(bp)
         {
             m_ExecIC.Text = "";
             AddComponet(m_TextTitleBar);

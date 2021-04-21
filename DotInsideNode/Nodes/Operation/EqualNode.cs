@@ -9,7 +9,7 @@ namespace DotInsideNode
     {
         static uint m_PinColor = StyleManager.GetU32Color(255, 255, 255);
 
-        public EqualNode()
+        public EqualNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "==";
             AddBaseComponet();
@@ -50,7 +50,7 @@ namespace DotInsideNode
     [EditorNode("Not Equal")]
     class NotEqualNode : EqualNode
     {
-        public NotEqualNode()
+        public NotEqualNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "!=";
         }

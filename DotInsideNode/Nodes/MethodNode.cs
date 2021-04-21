@@ -20,7 +20,7 @@ namespace DotInsideNode
 
         public TargetIC GetTarget() => m_TargetIC;
 
-        public MethodNode(MethodInfo method)
+        public MethodNode(INodeGraph bp,MethodInfo method) : base(bp)
         {
             if (method == null) return;
             m_Method = method;

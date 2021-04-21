@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using DotInsideLib;
+using ImGuiNET;
 
 namespace DotInsideNode
 {
@@ -33,15 +34,22 @@ namespace DotInsideNode
 
     class NodeEditorBase: INodeEditorView
     {
+        static INodeGraph m_BP = null;
+        public static void SubmitGraph(INodeGraph bp) => m_BP = bp;
+        protected INodeGraph BP => m_BP;
+
+        public delegate void DropAction(INodeGraph bp);
+        public static event DropAction OnDropEvent;
+
         public void AddNode(INode nodeView,bool atMosuePos = true)
         {
-            NodeManager.Instance.AddNode(nodeView, atMosuePos);
+            m_BP?.ngNodeManager.AddNode(nodeView, atMosuePos);
         }
 
         protected sealed override void DrawNodeEditorContent()
         {
-            NodeManager.Instance.Draw();
-            LinkManager.Instance.Draw();
+            m_BP?.ngNodeManager.Draw();
+            m_BP?.ngLinkManager.Draw();
             DrawContent();
         }
 
@@ -52,14 +60,24 @@ namespace DotInsideNode
 
         protected override void DoNodeEditorEnd() 
         {
-            NodeManager.Instance.Update();
-            LinkManager.Instance.Update();
+            m_BP?.ngNodeManager.Update();
+            m_BP?.ngLinkManager.Update();
+            DragDropProc();
             DoEnd();
         }
 
         protected virtual void DoStart() { }
         protected virtual void DrawContent() { }
         protected virtual void DoEnd() { }
+
+        unsafe void DragDropProc()
+        {
+            if (ImGui.BeginDragDropTarget())
+            {
+                if (BP != null)
+                    OnDropEvent?.Invoke(BP);
+            }
+        }
     }
 
 }

@@ -6,7 +6,7 @@ using ImGuiNET;
 namespace DotInsideNode
 {
     [Serializable]
-    class NodeManager: Singleton<NodeManager>
+    public class NodeManager
     {
         static Random s_Rand = new Random();
         Dictionary<int, INode> m_Nodes = new Dictionary<int, INode>();
@@ -78,10 +78,19 @@ namespace DotInsideNode
             if(imnodes.IsNodeHovered(ref nodeID))
             {
                 NotifyEventAction(nodeID, INode.EEvent.Hovered);
-                if(ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-                {
-                    NotifyEventAction(nodeID, INode.EEvent.Clicked);
-                }
+                CheckNodeMouseButton(nodeID);
+            }
+        }
+
+        void CheckNodeMouseButton(int nodeID)
+        {
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            {
+                NotifyEventAction(nodeID, INode.EEvent.LClicked);
+            }
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+            {
+                NotifyEventAction(nodeID, INode.EEvent.RClicked);
             }
         }
 
@@ -100,7 +109,7 @@ namespace DotInsideNode
                 Logger.Info("Delete Node Number:" + selectNum);
                 for (int i = 0; i < selectNum; ++i)
                 {
-                    TryDestroyNode(nodeIDs[i]);                       
+                    DestroyNode(nodeIDs[i]);                       
                 }
             }
             //Select nodes
@@ -118,11 +127,11 @@ namespace DotInsideNode
             INode node;
             if (m_Nodes.TryGetValue(nodeID, out node))
             {
-                node.EventProc(eEvent);
+                node.NodeEventProc(eEvent);
             }
         }
 
-        public bool TryDestroyNode(int nodeID)
+        public bool DestroyNode(int nodeID)
         {
             INode node;
             if (m_Nodes.TryGetValue(nodeID, out node))
@@ -130,7 +139,7 @@ namespace DotInsideNode
                 if (node.Removable == false)
                     return false;
 
-                node.EventProc(INode.EEvent.Detroyed);
+                node.NodeEventProc(INode.EEvent.Detroyed);
                 m_Nodes.Remove(nodeID);
                 return true;
             }

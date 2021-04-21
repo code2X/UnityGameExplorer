@@ -7,7 +7,7 @@
         ExecOC m_ExecOC_Completed = new ExecOC();
         BoolIC m_Condition = new BoolIC();
 
-        public WhileLoopNode()
+        public WhileLoopNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "While Loop";
             m_ExecOC_LoopBody.Text = "Loop Body".PadLeft(21);

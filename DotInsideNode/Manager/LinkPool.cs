@@ -104,7 +104,7 @@ namespace DotInsideNode
             return false;
         }
 
-        public bool TryGetLinkIDByStart(int start, out List<int> id)
+        public bool TryGetLinkIDByBegin(int start, out List<int> id)
         {
             return s_Start2Link.TryGetValue(start, out id);
         }
@@ -123,7 +123,7 @@ namespace DotInsideNode
         {
             List<int> linkIDs = new List<int>();
 
-            if(TryGetLinkIDByStart(queryLink.start,out linkIDs))
+            if(TryGetLinkIDByBegin(queryLink.start,out linkIDs))
             {
                 foreach(int id in linkIDs)
                 {

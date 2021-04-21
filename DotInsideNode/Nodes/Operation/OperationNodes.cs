@@ -6,6 +6,10 @@ namespace DotInsideNode
 {
     abstract class ArithmeticNode : OperationNoExecNode
     {
+        protected ArithmeticNode(INodeGraph bp) : base(bp)
+        {
+        }
+
         protected object DoArithmetic()
         {
             object left = m_ObjectIC_Left.Object;
@@ -46,7 +50,7 @@ namespace DotInsideNode
     {
         static OperationStrategy m_Strategy = new OperationSubtract();
 
-        public SubStractionNode()
+        public SubStractionNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "-";
             AddBaseComponet();
@@ -60,7 +64,7 @@ namespace DotInsideNode
     {
         static OperationStrategy m_Strategy = new OperationAddition();
 
-        public AdditionNode()
+        public AdditionNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "+";
             AddBaseComponet();
@@ -74,7 +78,7 @@ namespace DotInsideNode
     {
         static OperationStrategy m_Strategy = new OperationMultiply();
 
-        public MutiplyNode()
+        public MutiplyNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "×";
             AddBaseComponet();
@@ -88,7 +92,7 @@ namespace DotInsideNode
     {
         static OperationStrategy m_Strategy = new OperationDivision();
 
-        public DivisionNode()
+        public DivisionNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "/";
             AddBaseComponet();
@@ -102,7 +106,7 @@ namespace DotInsideNode
     {
         static OperationStrategy m_Strategy = new OperationModulo();
 
-        public ModuloNode()
+        public ModuloNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "%";
             AddBaseComponet();

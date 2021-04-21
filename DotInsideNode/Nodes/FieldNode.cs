@@ -17,7 +17,7 @@ namespace DotInsideNode
         TargetIC m_TargetIC = new TargetIC();
         ObjectOC m_ObjectOC = new ObjectOC();
 
-        public FieldNode()
+        public FieldNode(INodeGraph bp) : base(bp)
         {
             m_TargetIC.OnSetTargetType += new TargetIC.TypeHandler(OnTargetTypeSet);
             m_FieldCombo.OnSelected += new ComboSC.SelectAction(OnFieldSelected);

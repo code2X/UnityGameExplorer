@@ -9,7 +9,7 @@
 
         bool m_IsA = true;
 
-        public FlipFlopNode()
+        public FlipFlopNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "Flip Flop";
             m_ExecOC_A.Text = "A".PadLeft(9);

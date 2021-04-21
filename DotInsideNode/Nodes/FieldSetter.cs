@@ -20,7 +20,7 @@ namespace DotInsideNode
         ObjectIC m_ObjectIC = new ObjectIC();
         ObjectOC m_ObjectOC = new ObjectOC();
 
-        public FieldSetterNode()
+        public FieldSetterNode(INodeGraph bp) : base(bp)
         {
             m_TargetIC.OnSetTargetType += new TargetIC.TypeHandler(OnTargetTypeSet);
             m_FieldCombo.OnSelected += new ComboSC.SelectAction(OnFieldSelected);

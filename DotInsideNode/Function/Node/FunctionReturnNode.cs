@@ -8,11 +8,11 @@ namespace DotInsideNode
         TextTB m_TextTitleBar = new TextTB("Return Node");
         ExecIC m_ExecIC = new ExecIC();
 
-        IFunction m_Function;
+        IFunction m_Function = null;
 
         List<ParamIC> m_InputParams = new List<ParamIC>();
 
-        public FunctionReturnNode(IFunction function)
+        public FunctionReturnNode(INodeGraph bp, IFunction function) : base(bp)
         {
             m_Function = function;
 
@@ -31,7 +31,19 @@ namespace DotInsideNode
 
         protected override object ExecNode(int callerID, params object[] objects)
         {
-            return null;
+            //Fill out params
+            object[] outParams = new object[m_InputParams.Count];
+            for (int i = 0; i < m_InputParams.Count; ++i)
+            {
+                outParams[i] = m_InputParams[i].Object;
+            }
+            Assert.IsNotNull(m_Function);
+            Assert.IsNotNull(m_Function.GetGraph());
+
+            m_Function.GetGraph().ExecuteReturn(outParams);
+
+            //Out params event
+            return outParams;
         }
     }
 }

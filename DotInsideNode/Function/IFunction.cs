@@ -63,16 +63,17 @@ namespace DotInsideNode
         }
 
         //Function Node Interface
-        public abstract ComNodeBase GetNewFunctionEntry();
-        public abstract ComNodeBase GetNewFunctionReturn();
-        public abstract ComNodeBase GetNewFunctionCall();
+        public abstract ComNodeBase GetNewFunctionEntry(INodeGraph bluePrint);
+        public abstract ComNodeBase GetNewFunctionReturn(INodeGraph bluePrint);
+        public abstract ComNodeBase GetNewFunctionCall(INodeGraph bluePrint);
 
         //Overridable Interface
         public virtual void DrawEditor() {}
-        public virtual void Execute() { }
+        public virtual void Execute(int callerID, object[] inParams,out object[] outParams) { outParams = null; }
 
         public virtual void OpenGraph() { }
         public virtual void CloseGraph() { }
+        public abstract IFunctionGraph GetGraph();
 
         protected abstract class IFunctionEditor : IEditor
         {

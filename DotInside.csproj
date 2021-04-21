@@ -90,6 +90,7 @@
     <Compile Include="DotInsideNode\Function\FunctionManager.cs" />
     <Compile Include="DotInsideNode\Manager\LinkManager.cs" />
     <Compile Include="DotInsideNode\Manager\LinkPool.cs" />
+    <Compile Include="DotInsideNode\Manager\EditorNodeComponentManager.cs" />
     <Compile Include="DotInsideNode\Manager\NodeComponentManager.cs" />
     <Compile Include="DotInsideNode\Manager\NodeManager.cs" />
     <Compile Include="DotInsideNode\Manager\Singleton.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="DotInsideNode\NodeComs\OutObjComs.cs" />
     <Compile Include="DotInsideNode\NodeComs\TargetCom.cs" />
     <Compile Include="DotInsideNode\NodeComs\TypeofCom.cs" />
+    <Compile Include="DotInsideNode\Utils\uColor.cs" />
     <Compile Include="DotInsideNode\Var\SetterGetterComs.cs" />
     <Compile Include="DotInsideNode\Nodes\Convert\ConvertNode.cs" />
     <Compile Include="DotInsideNode\Nodes\Flow Control\FlipFlopNode.cs" />

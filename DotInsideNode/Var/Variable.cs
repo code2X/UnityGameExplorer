@@ -35,15 +35,15 @@ namespace DotInsideNode
             protected set => m_Getters = value;
         }
 
-        public override ComNodeBase GetNewGetter()
+        public override ComNodeBase GetNewGetter(INodeGraph bp)
         {
-            VarGetter getter = new VarGetter(this);
+            VarGetter getter = new VarGetter(bp, this);
             m_Getters.Add(getter);
             return getter;
         }
-        public override ComNodeBase GetNewSetter()
+        public override ComNodeBase GetNewSetter(INodeGraph bp)
         {
-            VarSetter setter = new VarSetter(this);
+            VarSetter setter = new VarSetter(bp,this);
             m_Setters.Add(setter);
             return setter;
         }
@@ -130,36 +130,18 @@ namespace DotInsideNode
 
         public override void OnVarDelete()
         {
-            foreach (VarSetter setter in Setters)
-            {
-                Assert.IsTrue(NodeManager.Instance.TryDestroyNode(setter.ID));
-            }
-            foreach (VarGetter getter in Getters)
-            {
-                Assert.IsTrue(NodeManager.Instance.TryDestroyNode(getter.ID));
-            }
+            //foreach (VarSetter setter in Setters)
+            //{
+            //    Assert.IsTrue(NodeManager.Instance.TryDestroyNode(setter.ID));
+            //}
+            //foreach (VarGetter getter in Getters)
+            //{
+            //    Assert.IsTrue(NodeManager.Instance.TryDestroyNode(getter.ID));
+            //}
 
             Setters.Clear();
             Getters.Clear();
         }
-
-        //public override void OnChangeType(VarBase template_var)
-        //{
-        //VarBase newVar = template_var.BaseCopy(this);
-        //Assert.IsNotNull(newVar);
-        //newVar.CopyType(template_var);
-        //
-        //foreach (VarSetter setter in m_Setters)
-        //{
-        //    setter.ChageVar(newVar);
-        //}
-        //foreach (VarGetter getter in m_Getters)
-        //{
-        //    getter.ChageVar(newVar);
-        //}
-        //Assert.IsTrue(VarManager.Instance.TryReplaceVar(this, newVar));
-        //Assert.IsTrue(VarManager.Instance.SelectVar(newVar.ID));
-        //}
 
     }
 

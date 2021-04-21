@@ -12,7 +12,7 @@ namespace DotInsideNode
         protected ObjectIC m_ObjectIC_Right = new ObjectIC();
         protected ObjectOC m_ObjectOC = new ObjectOC();
 
-        public OperationNode()
+        public OperationNode(INodeGraph bp) : base(bp)
         {
             m_ExecIC.Text = m_ExecOC.Text = "";
             m_ObjectIC_Left.Text = "Left".PadRight(10);
@@ -42,7 +42,7 @@ namespace DotInsideNode
         protected ObjectIC m_ObjectIC_Right = new ObjectIC();
         protected ObjectOC m_ObjectOC = new ObjectOC();
 
-        public OperationNoExecNode()
+        public OperationNoExecNode(INodeGraph bp) : base(bp)
         {
             m_ObjectIC_Left.Text = "Left".PadRight(8);
             m_ObjectOC.Text = "Result";

@@ -36,6 +36,7 @@ namespace DotInsideNode
         :
         base(ref name2funcs)
         {
+            NodeEditorBase.OnDropEvent += new NodeEditorBase.DropAction(OnFunctionDragDrop);
         }
 
         void DrawTooltip(IFunction function)
@@ -52,6 +53,23 @@ namespace DotInsideNode
             onEvent = false;
             base.DrawListItem(name, tObj,out onEvent);
             DrawTooltip(tObj);
+        }
+
+        unsafe void OnFunctionDragDrop(INodeGraph bp)
+        {
+            ImGuiPayloadPtr pPayload = ImGui.AcceptDragDropPayload("FUNCTION_DRAG");
+            if (pPayload.NativePtr != null)
+            {
+                int fucntionID = *(int*)pPayload.Data;
+                CreateFunctionCallNode(bp,fucntionID);
+            }
+        }
+
+        void CreateFunctionCallNode(INodeGraph bp,int functionID)
+        {
+            IFunction function = FunctionManager.Instance.GetFunctionByID(functionID);
+            Assert.IsNotNull(function);
+            bp.ngNodeManager.AddNode(function.GetNewFunctionCall(bp));
         }
 
         protected override string GetPayloadType() => "FUNCTION_DRAG";

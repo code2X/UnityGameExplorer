@@ -92,22 +92,77 @@ namespace DotInsideNode
             AddStyle(style, color);
         }
 
-        public void PushColorStyle()
+        public virtual void PushColorStyle()
         {
             foreach (Style style in m_StyleList)
                 imnodes.PushColorStyle(style.style, style.color);
         }
-        public void PopColorStyle()
+        public virtual void PopColorStyle()
         {
             foreach (Style style in m_StyleList)
                 imnodes.PopColorStyle();
         }
+    }
 
-        public void DrawStyle(System.Action action)
+    public class PinStyle: StyleManager
+    {
+        interface IStyle
         {
-            PushColorStyle();
-            action?.Invoke();
-            PopColorStyle();
+            void Push();
+            void Pop();
+        }
+
+        class NullStyle: IStyle
+        {
+            public virtual void Push() { }
+            public virtual void Pop() { }
+        }
+
+        class Style : IStyle
+        {
+            ColorStyle m_ColorStyle;
+            uint m_Color;
+
+            public Style(ColorStyle colorStyle, uint color)
+            {
+                m_ColorStyle = colorStyle;
+                m_Color = color;
+            }
+
+            public virtual void Push() => imnodes.PushColorStyle(m_ColorStyle, m_Color);
+            public virtual void Pop() => imnodes.PopColorStyle();
+        }
+
+        IStyle m_Normal = new NullStyle();
+        IStyle m_Hovered = new NullStyle();
+
+        public uint Normal
+        {
+            set => m_Normal = new Style(ColorStyle.Pin,value);
+        }
+        public uint Hovered
+        {
+            set => m_Hovered = new Style(ColorStyle.PinHovered, value);
+        }
+        public uint All
+        {
+            set
+            {
+                m_Normal = new Style(ColorStyle.Pin, value);
+                m_Hovered = new Style(ColorStyle.PinHovered, value);
+            }
+        }
+
+        public override void PushColorStyle()
+        {
+            m_Normal.Push();
+            m_Hovered.Push();
+        }
+        public override void PopColorStyle()
+        {
+            m_Normal.Pop();
+            m_Hovered.Pop();
         }
     }
+
 }

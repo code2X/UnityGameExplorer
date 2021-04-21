@@ -1,221 +1,115 @@
-﻿using imnodesNET;
-using System;
+﻿using ImGuiNET;
 using System.Collections.Generic;
 
 namespace DotInsideNode
 {
-
-    class NodeComponentAttributeProcesser
+    public class NodeComponentManager
     {
-        void ProcessInComConnect(INodeInput com)
+        public Dictionary<int, INodeComponent> m_Components = new Dictionary<int, INodeComponent>();
+        public Dictionary<int, INodeComponent> m_LeftComponents = new Dictionary<int, INodeComponent>();
+        public Dictionary<int, INodeComponent> m_RightComponents = new Dictionary<int, INodeComponent>();
+
+        INodeGraph m_NodeGraph = null;
+        INode m_Node = null;
+
+        public NodeComponentManager(INodeGraph nodeGraph, INode node)
         {
-            object[] attrs = com.GetType().GetCustomAttributes(true);
-            for (int i = 0; i < attrs.Length; i++)
-            {
-                if (attrs[i].GetType() == typeof(SingleConnect))
-                {
-                    LinkManager.Instance.TryRemoveLinkByEnd(com.ID);
-                }
-            }
-        }
-
-        void ProcessSingleConncect(INodeInput inCom)
-        {
-            SingleConnect singleConnect = (SingleConnect)Attribute.GetCustomAttribute(inCom.GetType(), typeof(SingleConnect));
-            if (singleConnect != null)
-            {
-                LinkManager.Instance.TryRemoveLinkByEnd(inCom.ID);
-            }
-        }
-        void ProcessSingleConncect(INodeOutput outCom)
-        {
-            SingleConnect singleConnect = (SingleConnect)Attribute.GetCustomAttribute(outCom.GetType(), typeof(SingleConnect));
-            if (singleConnect != null)
-            {
-                LinkManager.Instance.TryRemoveLinkByStart(outCom.ID);
-            }
-        }
-
-        bool ProcessConncectTypes(INodeInput inCom, INodeOutput outCom)
-        {
-            ConnectTypes connectTypes;
-            Type inComType = inCom.GetType();
-            Type outComType = outCom.GetType();
-
-            connectTypes = (ConnectTypes)Attribute.GetCustomAttribute(inComType, typeof(ConnectTypes));
-            if (connectTypes != null)
-            {
-                if (connectTypes.Contains(outComType) == false)
-                    return false;
-            }
-
-            connectTypes = (ConnectTypes)Attribute.GetCustomAttribute(outComType, typeof(ConnectTypes));
-            if (connectTypes != null)
-            {
-                if (connectTypes.Contains(inComType) == false)
-                    return false;
-            }
-
-            return true;
-        }
-
-        public bool ComCanConnect(INodeInput inCom, INodeOutput outCom)
-        {
-            if (ProcessConncectTypes(inCom, outCom) == false)
-                return false;
-
-            ProcessSingleConncect(inCom);
-            ProcessSingleConncect(outCom);
-
-            return true;
-        }
-    }
-
-    [Serializable]
-    class NodeComponentManager:Singleton<NodeComponentManager>,ILinkEventObserver
-    {
-        Random s_Random = new Random();
-
-        Dictionary<int, INodeComponent> g_Components = new Dictionary<int, INodeComponent>();
-        Dictionary<int, INodeInput> g_InComponents = new Dictionary<int, INodeInput>();
-        Dictionary<int, INodeOutput> g_OutComponents = new Dictionary<int, INodeOutput>();
-
-        NodeComponentAttributeProcesser m_ComAttrProcesser = new NodeComponentAttributeProcesser();
-
-        public NodeComponentManager() 
-        {
-            LinkManager.Instance.AttachEventObserver(this);
-        }
-        public NodeComponentManager(LinkManager linkManager)
-        {
-            linkManager.AttachEventObserver(this);
-        }
-
-        bool TryConnectComponet(int start, int end)
-        {
-            INodeInput inCom;
-            INodeOutput outCom;
-            if (g_InComponents.TryGetValue(end, out inCom) && g_OutComponents.TryGetValue(start, out outCom))
-            {
-                if(m_ComAttrProcesser.ComCanConnect(inCom,outCom) == false)
-                {
-                    return false;
-                }
-
-                return inCom.TryConnectBy(outCom) && outCom.TryConnectTo(inCom);
-            }
-            return false;
-        }
-
-        public virtual void NotifyLinkCreated(int start,int end)
-        {
-            if (TryConnectComponet(start, end))
-            {
-                LinkManager.Instance.AddLink(new LinkPair(start, end));
-            }
-        }
-
-        public virtual void NotifyLinkStarted(int start)
-        {
-            INodeInput inCom;
-            INodeOutput outCom;
-
-            if ( g_InComponents.TryGetValue(start, out inCom) )
-            {
-                inCom.LinkEventProc(ELinkEvent.Started);
-            }
-            if( g_OutComponents.TryGetValue(start, out outCom) )
-            {
-                outCom.LinkEventProc(ELinkEvent.Started);
-            }
-        }
-
-        public virtual void NotifyLinkDropped(int start)
-        {
-            INodeInput inCom;
-            INodeOutput outCom;
-
-            if (g_InComponents.TryGetValue(start, out inCom))
-            {
-                inCom.LinkEventProc(ELinkEvent.Dropped);
-            }
-            if (g_OutComponents.TryGetValue(start, out outCom))
-            {
-                outCom.LinkEventProc(ELinkEvent.Dropped);
-            }
-        }
-
-        public virtual void NotifyLinkDestroyed(int start)
-        {
-            INodeInput inCom;
-            INodeOutput outCom;
-
-            if (g_InComponents.TryGetValue(start, out inCom))
-            {
-                inCom.LinkEventProc(ELinkEvent.Destroyed);
-            }
-            if (g_OutComponents.TryGetValue(start, out outCom))
-            {
-                outCom.LinkEventProc(ELinkEvent.Destroyed);
-            }
-        }
-
-        public virtual void NotifyLinkHovered(int start)
-        {
-            INodeInput inCom;
-            INodeOutput outCom;
-
-            if (g_InComponents.TryGetValue(start, out inCom))
-            {
-                inCom.LinkEventProc(ELinkEvent.Hovered);
-            }
-            if (g_OutComponents.TryGetValue(start, out outCom))
-            {
-                outCom.LinkEventProc(ELinkEvent.Hovered);
-            }
-        }
-
-        void AddInComponet(int id, INodeInput inCom)
-        {
-            g_InComponents.Add(id, inCom);
-        }
-
-        void AddOutComponet(int id, INodeOutput outCom)
-        {
-            g_OutComponents.Add(id, outCom);
+            m_NodeGraph = nodeGraph;
+            m_Node = node;
         }
 
         public int AddComponet(INodeComponent component)
         {
-            int id;
-            while (g_Components.ContainsKey(id = s_Random.Next())) ;
-            g_Components.Add(id, component);
-
+            int id = m_NodeGraph.ngNodeComponentManager.AddComponet(component);
+            FillComponent(id, component);
+            m_Components.Add(id, component);
             return id;
         }
 
         public int AddComponet(INodeInput component)
         {
-            int id = AddComponet((INodeComponent)component);
-            AddInComponet(id, component);
+            int id = m_NodeGraph.ngNodeComponentManager.AddComponet(component);
+            FillComponent(id, component);
+            m_LeftComponents.Add(id, component);
             return id;
         }
 
         public int AddComponet(INodeOutput component)
         {
-            int id = AddComponet((INodeComponent)component);
-            AddOutComponet(id, component);
+            int id = m_NodeGraph.ngNodeComponentManager.AddComponet(component);
+            FillComponent(id, component);
+            m_RightComponents.Add(id, component);
             return id;
         }
 
-        public void RemoveComponent(INodeComponent component)
+        void FillComponent(int id, INodeComponent component)
         {
-            int comID = component.ID;
-            g_Components.Remove(comID);
-            g_InComponents.Remove(comID);
-            g_OutComponents.Remove(comID);
+            Assert.IsNotNull(m_Node);
 
-            component.NodeComEventProc(INodeComponent.EEvent.Detroyed);
+            component.ID = id;
+            component.ParentNode = m_Node;
+            component.NodeGraph = m_NodeGraph;
+        }
+
+        public void DrawComponent()
+        {
+            foreach (var component in m_Components)
+            {
+                component.Value.DrawComponent();
+            }
+
+            int sameLineCount = m_LeftComponents.Count < m_RightComponents.Count ? m_LeftComponents.Count : m_RightComponents.Count;
+            var leftEnumerator = m_LeftComponents.GetEnumerator();
+            var rightEnumerator = m_RightComponents.GetEnumerator();
+
+            for (int i = 0; i < sameLineCount; ++i)
+            {
+                leftEnumerator.MoveNext();
+                rightEnumerator.MoveNext();
+
+                leftEnumerator.Current.Value.DrawComponent();
+                ImGui.SameLine();
+                rightEnumerator.Current.Value.DrawComponent();
+            }
+
+            for (int i = 0; i < m_LeftComponents.Count - sameLineCount; ++i)
+            {
+                leftEnumerator.MoveNext();
+                leftEnumerator.Current.Value.DrawComponent();
+            }
+
+            for (int i = 0; i < m_RightComponents.Count - sameLineCount; ++i)
+            {
+                rightEnumerator.MoveNext();
+                rightEnumerator.Current.Value.DrawComponent();
+            }
+        }
+
+        public void PostfixProc()
+        {
+            foreach (var component in m_Components)
+            {
+                component.Value.DoComponentEnd();
+            }
+        }
+
+        public void Clear()
+        {
+            foreach (var com in m_Components)
+            {
+                m_NodeGraph.ngNodeComponentManager.RemoveComponent(com.Value);
+            }
+            foreach (var com in m_LeftComponents)
+            {
+                m_NodeGraph.ngNodeComponentManager.RemoveComponent(com.Value);
+            }
+            foreach (var com in m_RightComponents)
+            {
+                m_NodeGraph.ngNodeComponentManager.RemoveComponent(com.Value);
+            }
+            m_Components.Clear();
+            m_LeftComponents.Clear();
+            m_RightComponents.Clear();
         }
     }
 }

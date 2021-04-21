@@ -14,7 +14,7 @@
 
         public virtual IVar BaseVar => m_Var;
 
-        public VarSetter(IVar variable)
+        public VarSetter(INodeGraph bp,IVar variable) : base(bp)
         {
             Assert.IsNotNull(variable);
             m_Var = variable;
@@ -41,7 +41,7 @@
         }
 
         //Event
-        public override void EventProc(EEvent eEvent)
+        public override void NodeEventProc(EEvent eEvent)
         {
             switch(eEvent)
             {
@@ -50,7 +50,7 @@
                     break;
             }
 
-            DefEventProc(eEvent);
+            DefNodeEventProc(eEvent);
         }
 
         protected void NotifyVarChange()
@@ -75,7 +75,7 @@
 
         public virtual IVar BaseVar => m_Var;
 
-        public VarGetter(IVar variable)
+        public VarGetter(INodeGraph bp,IVar variable) : base(bp)
         {
             Assert.IsNotNull(variable);
             m_Var = variable;
@@ -97,7 +97,7 @@
 
         System.DateTime m_PrevSelectTime = System.DateTime.Now;
         //Event
-        public override void EventProc(EEvent eEvent)
+        public override void NodeEventProc(EEvent eEvent)
         {
             System.DateTime timeNow = System.DateTime.Now;
             System.TimeSpan span = timeNow - m_PrevSelectTime;
@@ -113,12 +113,12 @@
                         VarManager.Instance.SelectVar(BaseVar.ID);
                     }
                     break;
-                case EEvent.Clicked:
+                case EEvent.LClicked:
                     VarManager.Instance.SelectVar(BaseVar.ID);
                     break;
             }
 
-            DefEventProc(eEvent);
+            DefNodeEventProc(eEvent);
         }
 
         protected void NotifyVarChange()

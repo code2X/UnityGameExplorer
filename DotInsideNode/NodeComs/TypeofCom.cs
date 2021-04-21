@@ -66,7 +66,7 @@ namespace DotInsideNode
                 return;
             }
 
-            MethodNode endNode = new MethodNode(methodInfo);
+            //MethodNode endNode = new MethodNode(methodInfo);
             //NodeManager.Instance.AddNode(endNode);
             //LinkManager.Instance.TryCreateLink(this, endNode.GetTarget());
         }

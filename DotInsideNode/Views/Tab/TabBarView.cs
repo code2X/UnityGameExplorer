@@ -32,6 +32,7 @@ namespace DotInsideNode
             Close,
             Remove
         }
+        //System.Action<ETabEvent,diObject>
         public delegate void TabAction(ETabEvent eTabEvent, diObject obj);
         public event TabAction OnTabEvent;
 

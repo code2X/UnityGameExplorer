@@ -3,30 +3,29 @@ using System.Collections.Generic;
 
 namespace DotInsideNode
 {
-    abstract class IFunctionGraph
+    public abstract class INodeGraph
     {
         public abstract void OpenGraph();
         public abstract void CloseGraph();
-        public abstract void Execute(object[] objects);
+
+        public abstract LinkManager ngLinkManager
+        {
+            get;
+        }
+        public abstract NodeManager ngNodeManager
+        {
+            get;
+        }
+        public abstract EditorNodeComponentManager ngNodeComponentManager
+        {
+            get;
+        }
     }
 
-    abstract class IBluePrint
+    abstract class IFunctionGraph: INodeGraph
     {
-        public abstract void OpenGraph();
-        public abstract void CloseGraph();
-
-        public abstract LinkManager BP_LinkManager
-        {
-            get;
-        }
-        public abstract NodeManager BP_NodeManager
-        {
-            get;
-        }
-        public abstract NodeComponentManager BP_NodeComponentManager
-        {
-            get;
-        }
+        public abstract void Execute(int callerID,object[] inParams, out object[] outParams);
+        public abstract void ExecuteReturn(object[] inParams);
     }
 
     class FunctionGraph: IFunctionGraph
@@ -34,13 +33,19 @@ namespace DotInsideNode
         LinkManager m_LinkManager = null;
         NodeManager m_NodeManager = null;
         VarManager m_LocalVarManager = null;
-        NodeComponentManager m_NodeComponentManager = null;
+        EditorNodeComponentManager m_NodeComponentManager = null;
+
         Dictionary<int, Vector2> m_NodePositions = null;
-        bool isInit = false;
+
+        bool m_IsOpen = false;
         ComNodeBase m_EntryPoint = null;
         //List<ComNodeBase> m_ReturnPoint = new List<ComNodeBase>();
 
         Function m_Function = null;
+
+        public override LinkManager ngLinkManager => m_LinkManager;
+        public override NodeManager ngNodeManager => m_NodeManager;
+        public override EditorNodeComponentManager ngNodeComponentManager => m_NodeComponentManager;
 
         public FunctionGraph(Function function)
         {
@@ -51,7 +56,7 @@ namespace DotInsideNode
             m_LinkManager = new LinkManager();
             m_NodeManager = new NodeManager();
             m_LocalVarManager = new VarManager();
-            m_NodeComponentManager = new NodeComponentManager(m_LinkManager);           
+            m_NodeComponentManager = new EditorNodeComponentManager(this);
         }
 
         public void OutputParamEventProc(Function.EOutputParamEvent eOutputParamEvent, IParam param)
@@ -67,48 +72,45 @@ namespace DotInsideNode
             }
         }
 
+        public void AddEntryNode()
+        {
+            m_EntryPoint = m_Function.GetNewFunctionEntry(this);
+            m_NodeManager.AddNode(m_EntryPoint, false);
+        }
+
         void AddFristReturnNode()
         {
             if (m_EntryPoint == null)
                 return;
 
-            ComNodeBase returnPoint = m_Function.GetNewFunctionReturn();
-            NodeManager.Instance.AddNode(returnPoint, false);
-            
-            //Set Position
-            Vector2 entryNodePosition = NodeManager.Instance.GetNodeEditorPostion(m_EntryPoint);
-            Vector2 returnPointPosition = new Vector2(entryNodePosition);
-            returnPointPosition.x += 200;
-            NodeManager.Instance.SetNodeEditorPostion(returnPoint, returnPointPosition);
+            ComNodeBase firstReturnPoint = m_Function.GetNewFunctionReturn(this);
+            m_NodeManager.AddNode(firstReturnPoint, false);
+
+            if(m_IsOpen)
+            {
+                //Set Position
+                Vector2 entryNodePosition = m_NodeManager.GetNodeEditorPostion(m_EntryPoint);
+                Vector2 returnPointPosition = new Vector2(entryNodePosition);
+                returnPointPosition.x += 200;
+                m_NodeManager.SetNodeEditorPostion(firstReturnPoint, returnPointPosition);
+            }
 
             //Connect Exec
-            NodeBase.TryConnectCom<ExecOC, ExecIC>(m_EntryPoint, returnPoint);
+            NodeBase.TryConnectCom<ExecOC, ExecIC>(this,m_EntryPoint, firstReturnPoint);
         }
 
         public override void OpenGraph()
         {
-            LinkManager.Instance = m_LinkManager;
-            NodeComponentManager.Instance = m_NodeComponentManager;
-            NodeManager.Instance = m_NodeManager;
+            NodeEditorBase.SubmitGraph(this);
 
             if (m_NodePositions != null)
                 m_NodeManager.NodeEditorPostions = m_NodePositions;
-
-            TryInit();
-        }
-
-        public void TryInit()
-        {
-            if (isInit == false)
-            {
-                m_EntryPoint = m_Function.GetNewFunctionEntry();
-                NodeManager.Instance.AddNode(m_EntryPoint, false);
-                isInit = true;
-            }
+            m_IsOpen = true;
         }
 
         public override void CloseGraph()
         {
+            m_IsOpen = false;
             m_NodePositions = m_NodeManager.NodeEditorPostions;
         }
 
@@ -117,9 +119,19 @@ namespace DotInsideNode
 
         }
 
-        public override void Execute(params object[] inParams) 
+        public override void Execute(int callerID, object[] inParams, out object[] outParams)
         {
-            m_EntryPoint?.Play(0, inParams);
+            outParams = null;
+            m_EntryPoint?.Play(callerID, inParams);
+
+            if (m_ExecResult != null)
+                outParams = m_ExecResult;
+        }
+
+        object[] m_ExecResult = null;
+        public override void ExecuteReturn(object[] inParams)
+        {
+            m_ExecResult = inParams;
         }
     }
 }

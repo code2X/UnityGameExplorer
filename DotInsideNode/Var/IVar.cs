@@ -51,8 +51,8 @@ namespace DotInsideNode
             get;
             protected set;
         }
-        public abstract ComNodeBase GetNewGetter();
-        public abstract ComNodeBase GetNewSetter();
+        public abstract ComNodeBase GetNewGetter(INodeGraph bp);
+        public abstract ComNodeBase GetNewSetter(INodeGraph bp);
 
         //Overridable Field Interface
         public virtual bool InstanceEditable

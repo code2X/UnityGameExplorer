@@ -24,7 +24,7 @@ namespace DotInsideNode
         ComboSC m_NodeCombo;
         TypeOC m_NodeTypeOutput;
 
-        public TypeofNode()
+        public TypeofNode(INodeGraph bp) : base(bp)
         {
             m_Class = classList.Values[0];
 

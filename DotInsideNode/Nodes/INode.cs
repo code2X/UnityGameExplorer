@@ -16,11 +16,11 @@ namespace DotInsideNode
 
         public virtual void DrawNode()
         {
-            m_StyleManager.PushColorStyle();
+            Style.PushColorStyle();
             imnodes.BeginNode(this.ID);
             DrawNodeContent();
             imnodes.EndNode();
-            m_StyleManager.PopColorStyle();
+            Style.PopColorStyle();
         }
 
         //Logic Flow
@@ -30,13 +30,18 @@ namespace DotInsideNode
         //Event
         public enum EEvent
         {
-            Clicked,
+            LClicked,
+            RClicked,
             Selected,
             Hovered,
             Detroyed
         }
 
-        public virtual void EventProc(EEvent eEvent) { }
+        public virtual void NodeEventProc(EEvent eEvent) { }
+        protected void InfoComEvent(EEvent eEvent)
+        {
+            Logger.Info(GetType().Name + " " + eEvent.ToString());
+        }
 
         //Runtime
         public virtual string Compile() { return string.Empty; }
@@ -64,130 +69,64 @@ namespace DotInsideNode
 
     public class NodeBase: INode
     {
-        Dictionary<int,INodeComponent> m_Components = new Dictionary<int, INodeComponent>();
-        Dictionary<int, INodeComponent> m_LeftComponents = new Dictionary<int, INodeComponent>();
-        Dictionary<int, INodeComponent> m_RightComponents = new Dictionary<int, INodeComponent>();
+        INodeGraph m_NodeGraph = null;
+        NodeComponentManager m_ComManager = null;
+        protected NodeComponentManager ComManager => m_ComManager;
+        protected INodeGraph NodeGraph => m_NodeGraph;
 
-        NodeComponentManager m_NodeComManager => NodeComponentManager.Instance;
-
-        public int AddComponet(INodeComponent component)
+        public NodeBase(INodeGraph ng)
         {
-            int id = m_NodeComManager.AddComponet(component);
-            FillComponent(id, component);
-            m_Components.Add(id, component);
-            return id;
+            Assert.IsNotNull(ng);
+            m_NodeGraph = ng;
+            m_ComManager = new NodeComponentManager(ng, this);
         }
+        public int AddComponet(INodeComponent component) => m_ComManager.AddComponet(component);
+        public int AddComponet(INodeInput component) => m_ComManager.AddComponet(component);
+        public int AddComponet(INodeOutput component) => m_ComManager.AddComponet(component);
 
-        public int AddComponet(INodeInput component)
+        //Node Logic
+        protected sealed override void DrawNodeContent()
         {
-            int id = m_NodeComManager.AddComponet(component);
-            FillComponent(id, component);
-            m_LeftComponents.Add(id, component);
-            return id;
-        }
-
-        public int AddComponet(INodeOutput component)
-        {
-            int id = m_NodeComManager.AddComponet(component);
-            FillComponent(id, component);
-            m_RightComponents.Add(id, component);
-            return id;
-        }
-
-        void FillComponent(int id, INodeComponent component)
-        {
-            component.ID = id;
-            component.ParentNode = this;
-        }
-
-        //Node Flow
-        protected sealed override void DrawNodeContent() 
-        {
-            foreach (var component in m_Components)
-            {
-                component.Value.DrawComponent();
-            }
-
-            int sameLineCount = m_LeftComponents.Count < m_RightComponents.Count ? m_LeftComponents.Count : m_RightComponents.Count;
-            var leftEnumerator = m_LeftComponents.GetEnumerator();
-            var rightEnumerator = m_RightComponents.GetEnumerator();
-
-            for(int i = 0; i < sameLineCount;++i)
-            {
-                leftEnumerator.MoveNext();
-                rightEnumerator.MoveNext();
-
-                leftEnumerator.Current.Value.DrawComponent();
-                ImGui.SameLine();
-                rightEnumerator.Current.Value.DrawComponent();
-            }
-
-            for (int i = 0; i < m_LeftComponents.Count - sameLineCount; ++i)
-            {
-                leftEnumerator.MoveNext();
-                leftEnumerator.Current.Value.DrawComponent();
-            }
-
-            for (int i = 0; i < m_RightComponents.Count - sameLineCount; ++i)
-            {
-                rightEnumerator.MoveNext();
-                rightEnumerator.Current.Value.DrawComponent();
-            }
-
+            m_ComManager.DrawComponent();
             DrawContent();
         }
-
         public sealed override void DoNodeEnd()
         {
-            foreach (var component in m_Components)
-            {
-                component.Value.DoComponentEnd();
-            }
+            m_ComManager.PostfixProc();
             DoEnd();
-        }       
+        }
+
         protected virtual void DrawContent() { }
         protected virtual void DoEnd() { }
 
         //Event
-        public override void EventProc(EEvent eEvent) => DefEventProc(eEvent);
-        protected virtual void DefEventProc(EEvent eEvent)
+        public override void NodeEventProc(EEvent eEvent) => DefNodeEventProc(eEvent);
+        protected virtual void DefNodeEventProc(EEvent eEvent)
         {
             switch(eEvent)
             {
+                case EEvent.LClicked:
+                case EEvent.RClicked:
+                    InfoComEvent(eEvent);
+                    break;
                 case EEvent.Detroyed:
+                    InfoComEvent(eEvent);
                     OnNodeDetroyed();
                     break;
             }
+            
         }
 
-        void OnNodeDetroyed()
-        {
-            foreach(var com in m_Components)
-            {
-                m_NodeComManager.RemoveComponent(com.Value);
-                com.Value.NodeComEventProc(INodeComponent.EEvent.Detroyed);
-            }
-            foreach (var com in m_LeftComponents)
-            {
-                m_NodeComManager.RemoveComponent(com.Value);
-                com.Value.NodeComEventProc(INodeComponent.EEvent.Detroyed);
-            }
-            foreach (var com in m_RightComponents)
-            {
-                m_NodeComManager.RemoveComponent(com.Value);
-                com.Value.NodeComEventProc(INodeComponent.EEvent.Detroyed);
-            }
-            m_Components.Clear();
-            m_LeftComponents.Clear();
-            m_RightComponents.Clear();
-        }
+        void OnNodeDetroyed() => m_ComManager.Clear();
 
-        public static bool TryConnectCom<OUT,IN>(NodeBase begin,NodeBase end) where OUT: INodeOutput where IN: INodeInput
+        public static bool TryConnectCom<OUT,IN>(INodeGraph bp,NodeBase begin,NodeBase end) 
+            where OUT: INodeOutput 
+            where IN: INodeInput
         {
             OUT OutCom = null;
             IN InCom = null;
 
-            foreach (var pair in begin.m_RightComponents)
+            foreach (var pair in begin.m_ComManager.m_RightComponents)
             {
                 if(pair.Value is OUT)
                 {
@@ -195,7 +134,7 @@ namespace DotInsideNode
                 }
             }
 
-            foreach (var pair in end.m_LeftComponents)
+            foreach (var pair in end.m_ComManager.m_LeftComponents)
             {
                 if (pair.Value is IN)
                 {
@@ -205,8 +144,8 @@ namespace DotInsideNode
 
             if(OutCom != null && InCom != null)
             {
-                LinkManager.Instance.TryCreateLink(OutCom.ID, InCom.ID);
-                return LinkManager.Instance.IsConnect(OutCom.ID, InCom.ID);
+                bp.ngLinkManager.TryCreateLink(OutCom.ID, InCom.ID);
+                return bp.ngLinkManager.IsConnect(OutCom.ID, InCom.ID);
             }
             else
             {
@@ -217,8 +156,12 @@ namespace DotInsideNode
 
     public class ComNodeBase : NodeBase
     {
+        public ComNodeBase(INodeGraph bp):base(bp)
+        {}
+
         public virtual INodeTitleBar GetTitleBarCom() => null;
         public virtual ExecIC GetExecInCom() => null;
         public virtual ExecOC GetExecOutCom() => null;
     }
+
 }

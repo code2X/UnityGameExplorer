@@ -2,14 +2,28 @@
 
 namespace DotInsideNode
 {
-    class ConvertNode<T>: ComNodeBase
+    abstract class IConvertNode: ComNodeBase
+    {
+        public IConvertNode(INodeGraph bp) : base(bp)
+        {}
+
+        public abstract bool InputConnect(INodeOutput outCom);
+        public abstract bool OutputConnect(INodeInput inCom);
+    }
+
+    abstract class ConvertNode<T>: IConvertNode
     {
         protected ObjectIC m_ObjectIC = new ObjectIC();
         protected ObjectOC m_ObjectOC = new ObjectOC();
 
-        public ConvertNode()
+        public ConvertNode(INodeGraph bp):base(bp)
         {
             AddBaseComponet();
+        }
+
+        protected override void DrawContent()
+        {
+            ImGui.Text("To " + typeof(T).Name);
         }
 
         public void AddBaseComponet()
@@ -19,20 +33,47 @@ namespace DotInsideNode
             m_ObjectOC.ObjectType = typeof(T);
         }
 
-
+        public override bool InputConnect(INodeOutput outCom)
+        {
+            NodeGraph.ngLinkManager.TryCreateLink(outCom.ID, m_ObjectIC.ID);
+            return NodeGraph.ngLinkManager.IsConnect(outCom.ID, m_ObjectIC.ID);
+        }
+        public override bool OutputConnect(INodeInput inCom)
+        {
+            NodeGraph.ngLinkManager.TryCreateLink(m_ObjectOC.ID, inCom.ID);
+            return NodeGraph.ngLinkManager.IsConnect(m_ObjectOC.ID, inCom.ID);
+        }
     }
 
-    [EditorNode("To Int")]
-    class ToIntNode : ConvertNode<int>
+    [AConvertNode(typeof(bool))]
+    [EditorNode("To Bool")]
+    class ToBoolNode : ConvertNode<bool>
     {
-        protected override void DrawContent() 
-        {
-            ImGui.Text("To Int");
-        }
+        public ToBoolNode(INodeGraph bp) : base(bp)
+        { }
 
         public override object Request(ERequest type)
         {
-            
+            switch (type)
+            {
+                case ERequest.InstanceType:
+                    return typeof(bool);
+                case ERequest.InstanceObject:
+                    return System.Convert.ToBoolean(m_ObjectIC.Object);
+            }
+            throw new RequestTypeError(type);
+        }
+    }
+
+    [AConvertNode(typeof(int))]
+    [EditorNode("To Int")]
+    class ToIntNode : ConvertNode<int>
+    {
+        public ToIntNode(INodeGraph bp) : base(bp)
+        { }
+
+        public override object Request(ERequest type)
+        {          
             switch (type)
             {
                 case ERequest.InstanceType:
@@ -44,17 +85,15 @@ namespace DotInsideNode
         }
     }
 
+    [AConvertNode(typeof(float))]
     [EditorNode("To Float")]
-    class ToFloatNode : ConvertNode<int>
+    class ToFloatNode : ConvertNode<float>
     {
-        protected override void DrawContent()
-        {
-            ImGui.Text("To Float");
-        }
+        public ToFloatNode(INodeGraph bp) : base(bp)
+        {}
 
         public override object Request(ERequest type)
         {
-
             switch (type)
             {
                 case ERequest.InstanceType:
@@ -66,17 +105,15 @@ namespace DotInsideNode
         }
     }
 
+    [AConvertNode(typeof(double))]
     [EditorNode("To Double")]
-    class ToDoubleNode : ConvertNode<int>
+    class ToDoubleNode : ConvertNode<double>
     {
-        protected override void DrawContent()
-        {
-            ImGui.Text("To Double");
-        }
+        public ToDoubleNode(INodeGraph bp) : base(bp)
+        {}
 
         public override object Request(ERequest type)
         {
-
             switch (type)
             {
                 case ERequest.InstanceType:
@@ -87,4 +124,5 @@ namespace DotInsideNode
             throw new RequestTypeError(type);
         }
     }
+
 }

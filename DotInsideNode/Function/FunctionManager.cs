@@ -80,6 +80,7 @@ namespace DotInsideNode
 
         void ListMenuItemEventProc(ListMenuView.EMenuEvent eMenuEvent,ListMenuView.EItemEvent eItemEvent, IFunction function)
         {
+            object[] outParams = null;
             switch (eItemEvent)
             {
                 case ListMenuView.EItemEvent.Open_Graph:
@@ -89,7 +90,7 @@ namespace DotInsideNode
                     m_TabBarView?.OpenNewTab(function);
                     break;
                 case ListMenuView.EItemEvent.Call:
-                    function.Execute();
+                    function.Execute(0,null,out outParams);
                     break;
                 case ListMenuView.EItemEvent.Delete:
                     TryDeleteFunction(function.ID);

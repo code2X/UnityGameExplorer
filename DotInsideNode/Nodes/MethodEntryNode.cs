@@ -12,7 +12,7 @@ namespace DotInsideNode
         public override INodeTitleBar GetTitleBarCom() => m_TextTitleBar;
         public override ExecOC GetExecOutCom() => m_ExecOC;
 
-        public MethodEntryNode()
+        public MethodEntryNode(INodeGraph bp) : base(bp)
         {
             AddComponet(m_TextTitleBar);
             AddComponet(m_ExecOC);

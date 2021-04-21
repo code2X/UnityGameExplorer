@@ -66,17 +66,11 @@ namespace DotInsideNode
         {
             switch (eEvent)
             {
-                case ELinkEvent.Started:
-                    Logger.Info("ObjectIC Link Started");
-                    break;
-                case ELinkEvent.Dropped:
-                    Logger.Info("ObjectIC Link Dropped");
-                    break;
                 case ELinkEvent.Destroyed:
-                    Logger.Info("ObjectIC Link Destroyed");
                     m_ConnectBy = new NullOC();
                     break;
             }
+            DefLinkEventProc(eEvent);
         }
 
         public override object Request(ERequest type)
@@ -117,29 +111,16 @@ namespace DotInsideNode
         }
     }
 
-    class ValueIC<T>: ObjectIC
-    {
-        public T Value
-        {
-            get
-            {
-                if (m_ConnectBy is NullOC)
-                {
-                    return (T)m_Object.Object;
-                }
-                else
-                {
-                    return (T)Object;
-                }
-            }
-        }
-    }
+    class ValueIC<T>: ObjectIC where T: IConvertible
+    {}
 
+    [ConnectValueType(typeof(bool))]
     class BoolIC : ValueIC<bool>
     {
         public BoolIC()
         {
             m_Object.Object = false;
+            Style.Normal = uColor.Red;
         }
 
         protected override void DrawContent()
@@ -149,6 +130,22 @@ namespace DotInsideNode
             bool condition = (bool)m_Object.Object;
             ImGui.Checkbox("##"+ ID.ToString(), ref condition);
             m_Object.Object = condition;
+        }
+
+        public bool Value
+        {
+            get
+            {
+                string ase = "";
+                if (m_ConnectBy is NullOC)
+                {
+                    return Convert.ToBoolean(m_Object.Object);
+                }
+                else
+                {
+                    return Convert.ToBoolean(Object);
+                }
+            }
         }
     }
 
@@ -168,6 +165,22 @@ namespace DotInsideNode
             ImGui.InputInt("##" + ID.ToString(), ref value);
             m_Object.Object = value;
         }
+
+        public int Value
+        {
+            get
+            {
+                if (m_ConnectBy is NullOC)
+                {
+                    return Convert.ToInt32(m_Object.Object);
+                }
+                else
+                {
+                    return Convert.ToInt32(Object);
+                }
+            }
+        }
+
     }
 
 }

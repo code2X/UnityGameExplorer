@@ -13,7 +13,7 @@ namespace DotInsideNode
         int m_OutPinIndex = 0;     
         List<ExecOC> m_ExecOC_List = new List<ExecOC>();
 
-        public SequenceNode()
+        public SequenceNode(INodeGraph bp) : base(bp)
         {
             m_TextTitleBar.Title = "Sequence";
 

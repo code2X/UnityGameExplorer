@@ -30,28 +30,37 @@ namespace DotInsideNode
 
         public Function()
         {
-            m_FunctionGraph = new FunctionGraph(this);
+            FunctionGraph functionGraph = new FunctionGraph(this);
+            m_FunctionGraph = functionGraph;
+            functionGraph.AddEntryNode();            
+
             m_BaseEditor = new FunctionDefaultEditor(this);
         }
 
         //Function Node Interface
-        public override ComNodeBase GetNewFunctionEntry()
+        public override ComNodeBase GetNewFunctionEntry(INodeGraph bluePrint)
         {
-            FunctionEntryNode entryNode = new FunctionEntryNode(this);
+            Assert.IsNotNull(m_FunctionGraph);
+
+            FunctionEntryNode entryNode = new FunctionEntryNode(bluePrint, this);
             m_EntryNodes.Add(entryNode);
             return entryNode;
         }
 
-        public override ComNodeBase GetNewFunctionReturn()
+        public override ComNodeBase GetNewFunctionReturn(INodeGraph bluePrint)
         {
-            FunctionReturnNode returnNode = new FunctionReturnNode(this);
+            Assert.IsNotNull(m_FunctionGraph);
+
+            FunctionReturnNode returnNode = new FunctionReturnNode(bluePrint, this);
             m_ReturnNodes.Add(returnNode);
             return returnNode;
         }
 
-        public override ComNodeBase GetNewFunctionCall()
+        public override ComNodeBase GetNewFunctionCall(INodeGraph bluePrint)
         {
-            FunctionCallNode callNode = new FunctionCallNode(this);
+            Assert.IsNotNull(m_FunctionGraph);
+
+            FunctionCallNode callNode = new FunctionCallNode(bluePrint, this);
             m_CallNodes.Add(callNode);
             return callNode;
         }
@@ -109,6 +118,12 @@ namespace DotInsideNode
             m_FunctionGraph?.CloseGraph();
         }
 
+        public override void Execute(int callerID, object[] inParams, out object[] outParams)
+        {
+            outParams = null;
+            m_FunctionGraph?.Execute(callerID, inParams, out outParams);
+        }
+
         public override void DrawEditor()
         {
             m_BaseEditor.DrawEditor();
@@ -141,5 +156,6 @@ namespace DotInsideNode
             }
         }
 
+        public override IFunctionGraph GetGraph() => m_FunctionGraph;
     }
 }

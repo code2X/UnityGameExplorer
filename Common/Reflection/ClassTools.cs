@@ -11,5 +11,17 @@ class ClassTools
         Assert.IsNotNull(constructor);
         return constructor.Invoke(null);
     }
+
+    public static object CallConstructor<T>(System.Type type,T value)
+    {
+        Type[] types = new Type[1];
+        types[0] = typeof(T);
+        object[] param = new object[1];
+        param[0] = value;
+
+        var constructor = type.GetConstructor(types);
+        Assert.IsNotNull(constructor);
+        return constructor.Invoke(param);
+    }
 }
 

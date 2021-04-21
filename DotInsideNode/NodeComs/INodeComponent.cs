@@ -17,7 +17,17 @@ namespace DotInsideNode
     public abstract class INodeComponent : diObject
     {
         INode m_Parent = new NullNode();
+        INodeGraph m_pNodeGraph = null;
 
+        public INodeGraph NodeGraph
+        {
+            get
+            {
+                Assert.IsNotNull(m_pNodeGraph);
+                return m_pNodeGraph;
+            }
+            set => m_pNodeGraph = value;
+        }
         public INode ParentNode
         {
             get => m_Parent;
@@ -40,7 +50,12 @@ namespace DotInsideNode
             Hovered,
             Detroyed
         }
-        public virtual void NodeComEventProc(EEvent eEvent) { }
+        public virtual void NodeComEventProc(EEvent eEvent) { InfoComEvent(eEvent); }
+
+        protected void InfoComEvent(EEvent eEvent)
+        {
+            Logger.Info(ParentNode.GetType().Name + " " + GetType().Name + " Com " + eEvent.ToString());
+        }
     }
 
     /// <summary>

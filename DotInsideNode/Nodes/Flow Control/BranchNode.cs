@@ -7,7 +7,7 @@
         ExecOC m_ExecOC_False = new ExecOC();
         BoolIC m_Condition = new BoolIC();
 
-        public BranchNode()
+        public BranchNode(INodeGraph bp):base(bp)
         {
             m_TextTitleBar.Title = "Branch";
             m_ExecOC_True.Text = "True".PadLeft(20);
