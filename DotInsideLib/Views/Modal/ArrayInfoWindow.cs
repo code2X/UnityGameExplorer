@@ -6,7 +6,7 @@ namespace DotInsideLib
 {
     public class ArrayInfoWindow : IWindowView
     {
-        public override string GetWindowName() => "Array Element";
+        public override string WindowName => "Array Element";
         IArrayDrawer arrayDrawer = new DefaultArrayDrawer();
 
         object arrayInstance;
@@ -40,7 +40,7 @@ namespace DotInsideLib
             var array = (Array)arrayInstance;
             ImGui.Text("Length:" + array.Length);
 
-            ImGuiUtils.TableView("ArrayInfo", () =>{
+            ImGuiEx.TableView("ArrayInfo", () =>{
                 int index = 0;
                 foreach (var i in (Array)arrayInstance)
                 {

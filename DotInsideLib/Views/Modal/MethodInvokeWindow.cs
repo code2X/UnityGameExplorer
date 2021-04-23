@@ -66,7 +66,7 @@ namespace DotInsideLib
 
         void DrawTable()
         {
-            ImGuiUtils.TableView("MethodInvokeTable", () =>
+            ImGuiEx.TableView("MethodInvokeTable", () =>
             {
                 for (int i = 0; i < inputText.Length; ++i)
                 {

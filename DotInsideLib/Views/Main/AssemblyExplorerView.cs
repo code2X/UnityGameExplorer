@@ -20,7 +20,7 @@ namespace DotInsideLib
 
     public class AssemblyExplorerView : IWindowView
     {
-        public override string GetWindowName() => "Assembly Explorer";
+        public override string WindowName => "Assembly Explorer";
         string processName;
         static ImGuiTableFlags tableFlags = ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.Resizable | ImGuiTableFlags.Reorderable | ImGuiTableFlags.Hideable;
 
@@ -86,7 +86,7 @@ namespace DotInsideLib
             {
                 if (ImGui.CollapsingHeader(state.Key))
                 {
-                    ImGuiUtils.TableView(table_name, () =>
+                    ImGuiEx.TableView(table_name, () =>
                     {
                         foreach (var class2type in class_dict[state.Key])
                         {
@@ -103,7 +103,7 @@ namespace DotInsideLib
 
         void DrawTableRow(KeyValuePair<string, Type> class2type)
         {
-            ImGuiUtils.TableColumns(() =>
+            ImGuiEx.TableColumns(() =>
             {
                 if (ImGui.Button(class2type.Key))
                 {

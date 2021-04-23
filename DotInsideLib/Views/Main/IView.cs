@@ -20,7 +20,7 @@ namespace DotInsideLib
         {
             if (!showWindow) return;
 
-            ImGui.Begin(GetWindowName(), ref showWindow, GetWindowFlags());
+            ImGui.Begin(WindowName, ref showWindow, WindowFlags);
             DrawWindowContent();
             ImGui.End();
         }
@@ -28,15 +28,16 @@ namespace DotInsideLib
         public void ShowWindow() => showWindow = true;
         public void CloseWindow() => showWindow = false;
 
-        public virtual ImGuiWindowFlags GetWindowFlags() => ImGuiWindowFlags.None;
-        public virtual string GetWindowName() => "ModalWindow";
+        public virtual ImGuiWindowFlags WindowFlags => ImGuiWindowFlags.None;
+        public abstract string WindowName { get; }
+
         public abstract void DrawWindowContent();
     }
 
-    public class ISingletonWindowView<T> : IWindowView
+    public abstract class ISingletonWindowView<T> : IWindowView
     {
-        static ISingletonWindowView<T> instance = new ISingletonWindowView<T>();
-        public static ISingletonWindowView<T> GetInstance() => instance;
+        //static ISingletonWindowView<T> instance = new ISingletonWindowView<T>();
+        public static ISingletonWindowView<T> GetInstance() => null;
 
         public override void DrawWindowContent() => throw new NotImplementedException();
     }

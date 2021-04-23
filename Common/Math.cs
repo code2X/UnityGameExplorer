@@ -19,6 +19,11 @@ namespace MATH
             }
             return value;
         }
+
+        public static int Abs(int value)
+        {
+            return value < 0 ? -value : value;
+        }
     }
 }
 

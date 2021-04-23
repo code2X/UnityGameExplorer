@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ImGuiNET;
 using imnodesNET;
 using System.Runtime.InteropServices;
+using DotInsideNode;
 
 namespace DotInsideLib
 {
@@ -11,14 +12,22 @@ namespace DotInsideLib
         static InstanceView instanceView;
         static AssemblyExplorerView explorerView;
         public static SortedList<string, CsharpClass> classListDetails = new SortedList<string, CsharpClass>();
+        static private IBluePrint enumPrint = new Enumeration();
+        static private IBluePrint structPrint = new Structure();
 
         static unsafe void DotInsideRender()
         {
             Caller.Try(() =>
             {
-                DotInsideNode.DotPrint.GetInstance().OnGUI();
-                explorerView.OnGUI();
-                instanceView.OnGUI();
+                enumPrint.Draw();
+                structPrint.Draw();
+
+                ContentBrowser.Instance.OnGUI();
+                BluePrintWindow.Instance.OnGUI();
+                //DotInsideNode.DotPrint.GetInstance().OnGUI();
+                //enumPrint.Draw();
+                //explorerView.OnGUI();
+                //instanceView.OnGUI();
                 ImGui.ShowDemoWindow();
                 //ArrayInfoWindow.GetInstance().OnGUI();
                 //ArrayElementInputWindow.GetInstance().OnGUI();

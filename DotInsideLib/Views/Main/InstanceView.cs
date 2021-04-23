@@ -24,7 +24,7 @@ namespace DotInsideLib
             }
         }
 
-        public override string GetWindowName() => "Instance Explorer";
+        public override string WindowName => "Instance Explorer";
         static InstanceInfo curInstance;
         static ArrayList subViews;
         static HashSet<InstanceInfo> instanceList = new HashSet<InstanceInfo>();
@@ -88,7 +88,7 @@ namespace DotInsideLib
             ImGui.Text("Instance List");
 
             InstanceInfo removeInfo = new InstanceInfo();
-            ImGuiUtils.TableView("InstanceTable", () =>
+            ImGuiEx.TableView("InstanceTable", () =>
             {
                 foreach (InstanceInfo instance in instanceList)
                 {
@@ -97,7 +97,7 @@ namespace DotInsideLib
                     if (instance == curInstance)
                         ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0 + 1, ImGui.GetColorU32(color));
 
-                    ImGuiUtils.TableTextRow(0, instance.parent, instance.type.Name);
+                    ImGuiEx.TableTextRow(0, instance.parent, instance.type.Name);
 
                     ImGui.TableSetColumnIndex(2);
                     if (ImGui.Button(instance.name.ToString()))

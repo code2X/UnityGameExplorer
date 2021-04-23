@@ -37,7 +37,7 @@ namespace DotInsideLib
 
             if (ImGui.BeginTable(table_name, 2, TableFlags))
             {
-                ImGuiUtils.TableSetupHeaders("Type", "Name");
+                ImGuiEx.TableSetupHeaders("Type", "Name");
 
                 foreach (var fieldPair in field_list)
                 {
@@ -45,7 +45,7 @@ namespace DotInsideLib
                     ImGui.TableSetColumnIndex(0);
                     fieldDrawer.DrawType(fieldPair.Value.FieldType);
 
-                    ImGuiUtils.TableTextRow(1, fieldPair.Key);
+                    ImGuiEx.TableTextRow(1, fieldPair.Key);
                 }
                 ImGui.EndTable();
             }
@@ -60,7 +60,7 @@ namespace DotInsideLib
 
             if (ImGui.BeginTable(table_name, 3, TableFlags))
             {
-                ImGuiUtils.TableSetupHeaders("Type", "Name", "Value");
+                ImGuiEx.TableSetupHeaders("Type", "Name", "Value");
 
                 foreach (var fieldPair in field_list)
                 {

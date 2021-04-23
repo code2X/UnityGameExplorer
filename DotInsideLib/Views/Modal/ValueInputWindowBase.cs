@@ -18,7 +18,7 @@ namespace DotInsideLib
 
         public void DrawTable(string tableName, Type type, string name, bool errored = false)
         {
-            ImGuiUtils.TableView(tableName, () =>
+            ImGuiEx.TableView(tableName, () =>
             {
                 ImGui.TableNextRow();
                 paramTable.DrawRow(type, name, ref inputText, errored);

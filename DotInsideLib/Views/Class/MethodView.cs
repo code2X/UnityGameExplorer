@@ -42,7 +42,7 @@ namespace DotInsideLib
 
             if (ImGui.BeginTable(TableName, 3, TableFlags))
             {
-                ImGuiUtils.TableSetupHeaders("Return Type", "Name", "Param");
+                ImGuiEx.TableSetupHeaders("Return Type", "Name", "Param");
 
                 foreach (var method in table)
                 {

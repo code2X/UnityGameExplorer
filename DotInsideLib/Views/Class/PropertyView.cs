@@ -37,7 +37,7 @@ namespace DotInsideLib
 
             if (ImGui.BeginTable(table_name, 4, TableFlags))
             {
-                ImGuiUtils.TableSetupHeaders(
+                ImGuiEx.TableSetupHeaders(
                     "Type",
                     "Name",
                     "Gettable",
@@ -48,7 +48,7 @@ namespace DotInsideLib
                     ImGui.TableSetColumnIndex(0);
                     propertyDrawer.DrawType(property.Value.PropertyType);
 
-                    ImGuiUtils.TableTextRow(1, property.Key, property.Value.CanRead.ToString(), property.Value.CanWrite.ToString());
+                    ImGuiEx.TableTextRow(1, property.Key, property.Value.CanRead.ToString(), property.Value.CanWrite.ToString());
                 }
                 ImGui.EndTable();
             }
@@ -63,7 +63,7 @@ namespace DotInsideLib
 
             if (ImGui.BeginTable(table_name, 5, TableFlags))
             {
-                ImGuiUtils.TableSetupHeaders(
+                ImGuiEx.TableSetupHeaders(
                     "Type",
                     "Name",
                     "Value",
@@ -100,7 +100,7 @@ namespace DotInsideLib
             ImGui.TableSetColumnIndex(2);
             propertyDrawer.DrawPropertyValue(propertyPair.Value, GetClassInstance());
 
-            ImGuiUtils.TableTextRow(
+            ImGuiEx.TableTextRow(
                 3,
                 propertyPair.Value.CanRead.ToString(),
                 propertyPair.Value.CanWrite.ToString());
